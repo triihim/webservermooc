@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Register</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+
+        <h1>Register</h1>
+        
+        <form th:action="@{/register}" th:object="${registrationDTO}" th:method="POST">
+            <div>
+                firstname <input type="text" th:field="*{firstName}" />
+                <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+            </div>
+            <div>
+                lastname <input type="text" th:field="*{lastName}" />
+                <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+            </div>
+            <div>
+                username <input type="text" th:field="*{username}" />
+                <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+            </div>
+            <div>
+                password <input type="password" th:field="*{password}" />
+                <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+            </div>
+            <div>
+                confirm password <input type="password" th:field="*{passwordConfirm}" />
+            </div>
+            <div>
+                <button type="submit">register</button>
+            </div>
+        </form>
+
+    </body>
+</html>
