@@ -1,0 +1,81 @@
+#page-container {
+    max-width: 750px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    padding: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+main {
+    padding: 5%;
+}
+
+#feed-post-textarea {
+    resize: none;
+}
+
+#profile-picture {
+    height: 200px;
+    width: 200px;
+    background-color: #ccc;
+    border-radius: 100%;
+}
+
+#logged-in-name {
+    font-size: 1.2rem;
+    line-height: 100%;
+}
+
+#logged-in-image {
+    background-color: #ccc;
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+}
+
+.post-sender {
+    font-size: 1.4rem;
+    vertical-align: bottom;
+}
+
+.post-timestamp, .comment-timestamp {
+   font-size: .9rem;
+   font-style: italic;
+   vertical-align: bottom;
+}
+
+.post-comment {
+    padding: 10px;
+    padding-left: 20px;
+    margin: 10px 0;
+    border-left: 2px solid #ccc;
+    background-color: #fafafa;
+}
+
+.like-button {
+    min-width: 70px;
+}
+
+a, a:visited {
+    text-decoration: none;
+}
+
+@media (max-width: 768px) { 
+    #page-container {
+        border-radius: 0;
+        border: none;
+        margin-top: 0;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 576px) { 
+    .nav-pills > li{
+        width: 100%;
+    }
+   
+    .nav-pills button {
+        width: 100%;
+    }
+}

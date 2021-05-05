@@ -11,6 +11,7 @@ public class HttpSecurityConfigurer {
             .antMatchers("/register").permitAll()
             .antMatchers("/login").permitAll()
             .antMatchers("/account").hasAnyAuthority("USER")
+            .antMatchers("/api").hasAnyAuthority("USER")
             .anyRequest().authenticated();
 
             http.formLogin().permitAll().defaultSuccessUrl("/account");

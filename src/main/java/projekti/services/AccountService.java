@@ -1,5 +1,7 @@
 package projekti.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,8 @@ public class AccountService {
     public void register(RegistrationDTO dto) {
         logger.info("Registering user: " + dto.getUsername());
         Account account = new Account();
-        account.setFirstName(dto.getFirstName());
-        account.setLastName(dto.getLastName());
+        account.setFirstName(capitalize(dto.getFirstName()));
+        account.setLastName(capitalize(dto.getLastName()));
         account.setUsername(dto.getUsername());
         account.setPassword(passwordEncoder.encode(dto.getPassword()));
         accountRepository.save(account);
@@ -45,6 +47,17 @@ public class AccountService {
         dto.setProfilePictureId(account.getProfilePictureId());
         
         return dto;
+    }
+    
+    public List<String> getAccountNamesContaining(String partial) {
+        return accountRepository.findByUsernameContainingIgnoreCase(partial)
+                .stream()
+                .map(account -> account.getUsername())
+                .collect(Collectors.toList());
+    }
+    
+    private String capitalize(String str) {
+        return  str.substring(0, 1).toUpperCase() + str.substring(1);
     }
     
 }

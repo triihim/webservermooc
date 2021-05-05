@@ -1,11 +1,120 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title th:text="${account.username}"></title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
+    <head th:replace="fragments/layout :: head(title=${account.username})"></head>
     <body>
-        <h1 th:text="${account.username}"></h1>
+        <div id="page-container" class="container">
+            <header th:replace="fragments/layout :: header"></header>
+            
+            <main>
+                
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <img id="profile-picture" />
+                    <h1 th:text="${account.username}"></h1>
+                    <p>
+                        <span th:text="${account.firstName + ' ' + account.lastName}"></span>
+                    </p>
+                </div>
+                
+                <ul class="nav nav-pills justify-content-center mt-3" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed" type="button" role="tab" aria-controls="feed" aria-selected="true">
+                            <span class="pe-1">Feed</span>
+                            <span class="badge rounded-pill bg-light text-dark">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="followers-tab" data-bs-toggle="tab" data-bs-target="#followers" type="button" role="tab" aria-controls="followers" aria-selected="false">
+                            <span class="pe-1">Followers</span>
+                            <span class="badge rounded-pill bg-light text-dark">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="following-tab" data-bs-toggle="tab" data-bs-target="#following" type="button" role="tab" aria-controls="following" aria-selected="false">
+                            <span class="pe-1">Following</span>
+                            <span class="badge rounded-pill bg-light text-dark">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="photos-tab" data-bs-toggle="tab" data-bs-target="#photos" type="button" role="tab" aria-controls="photos" aria-selected="false">
+                            <span class="pe-1">Photos</span>
+                            <span class="badge rounded-pill bg-light text-dark">0</span>
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content mt-5">
+                    <div class="tab-pane fade show active" id="feed" role="tabpanel" aria-labelledby="feed-tab">
+                        
+                        <div class="input-group" th:if="${owner}">
+                            <textarea class="form-control" id="feed-post-textarea" rows="2" placeholder="Got something to say?" maxlength="120"></textarea>
+                            <button class="btn btn-success input-group-append">
+                                <i class="bi bi-chat-left-text-fill pe-1"></i>
+                                <span>Post</span>
+                            </button>
+                        </div>
+                        
+                        <div id="posts">
+                            <div class="post d-flex flex-column my-4">
+                                <div class="d-flex align-items-end justify-content-between">
+                                    <p class="post-sender m-0"><a href="#">masa</a></p>
+                                    <p class="post-timestamp m-0 text-muted">05/05/2021 19:25</p>
+                                </div>
+                                <div class="post-content mt-1">
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam malesuada auctor tellus quis sollicitudin. Pellentesque eleifend massa orci.
+                                    </p>
+                                </div>
+                                
+                                <div class="post-controls mb-3 d-flex">
+                                    <button class="like-button btn btn-outline-primary me-2">
+                                        <i class="bi bi-hand-thumbs-up-fill"></i>
+                                        <span class="badge rounded-pill bg-light text-dark">0</span>
+                                    </button>
+                                    <div class="input-group">
+                                        <input class="form-control" placeholder="Comment" maxlength="60" />
+                                        <button class="btn btn-outline-success input-group-append">
+                                            <i class="bi bi-chat-dots-fill"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="post-comments">
+                                    <div class="post-comment">
+                                        <div class="d-flex align-items-end justify-content-between">
+                                            <p class="m-0"><a href="#">pasi</a></p>
+                                            <p class="comment-timestamp m-0 text-muted">05/05/2021 20:05</p>
+                                        </div>
+                                        <p>
+                                             consectetur adipiscing elit
+                                        </p>
+                                    </div>
+                                    <div class="post-comment">
+                                        <div class="d-flex align-items-end justify-content-between">
+                                            <p class="m-0"><a href="#">pasi</a></p>
+                                            <p class="comment-timestamp m-0 text-muted">05/05/2021 20:05</p>
+                                        </div>
+                                        <p>
+                                             consectetur adipiscing elit
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    <div class="tab-pane fade" id="followers" role="tabpanel" aria-labelledby="followers-tab">
+                        Followers
+                    </div>
+                    <div class="tab-pane fade" id="following" role="tabpanel" aria-labelledby="following-tab">
+                        Following
+                    </div>
+                    <div class="tab-pane fade" id="photos" role="tabpanel" aria-labelledby="photos-tab">
+                        Photos
+                    </div>
+                </div>
+              
+            </main>
+            
+        </div>
     </body>
 </html>

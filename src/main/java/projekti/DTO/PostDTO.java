@@ -7,14 +7,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class AccountDTO {
+public class PostDTO {
     
-    private String firstName;
+    private String content;
     
-    private String lastName;
-    
-    private String username;
-
-    private Long profilePictureId;
+    // TOOD: extend
     
 }

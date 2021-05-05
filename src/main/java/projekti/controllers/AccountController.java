@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import projekti.DTO.AccountDTO;
 import projekti.DTO.RegistrationDTO;
 import projekti.services.AccountService;
+import projekti.helpers.SecurityHelper;
 
 @Controller
 public class AccountController {
@@ -49,11 +50,15 @@ public class AccountController {
     }
     
     @GetMapping("/account/{username}")
-    public String accountPage(Model model, @PathVariable String username) {
+    public String accountPage(Model model, @PathVariable String username, Authentication authentication) {
         AccountDTO dto = accountService.getAccount(username);
         
         if(dto == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        
+        if(SecurityHelper.accessorIsLoggedInUser(username)) {
+            model.addAttribute("owner", true);
         }
         
         model.addAttribute("account", dto);
