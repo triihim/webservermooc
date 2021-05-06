@@ -57,11 +57,9 @@ public class AccountController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         
-        if(SecurityHelper.accessorIsLoggedInUser(username)) {
-            model.addAttribute("owner", true);
-        }
-        
+        model.addAttribute("owner", SecurityHelper.accessorIsLoggedInUser(username));
         model.addAttribute("account", dto);
+        
         return "account";
     }
     

@@ -1,19 +1,18 @@
 package projekti.DTO;
 
-import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class PostDTO {
+public class FollowingDTO {
     
-    private String content;
+    private boolean isFollowing;
     
-    private ZonedDateTime createdAt;
+    private String followee;
     
-    private String owner;
+    private int followerCount;
     
 }

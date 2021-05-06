@@ -11,5 +11,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     public Account findByUsername(String username);
     
     public List<Account> findByUsernameContainingIgnoreCase(String username);
-    
+   
 }

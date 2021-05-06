@@ -13,9 +13,14 @@
                     <p>
                         <span th:text="${account.firstName + ' ' + account.lastName}"></span>
                     </p>
+                    <p th:if="${!owner}">
+                        <a id="follow-button" class="btn btn-link text-decoration-none">
+                            <span class="spinner-border" role="status"></span>
+                        </a>
+                    </p>
                 </div>
                 
-                <ul class="nav nav-pills justify-content-center mt-3" role="tablist">
+                <ul class="nav nav-pills justify-content-center" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed" type="button" role="tab" aria-controls="feed" aria-selected="true">
                             <span class="pe-1">Feed</span>
@@ -25,7 +30,7 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="followers-tab" data-bs-toggle="tab" data-bs-target="#followers" type="button" role="tab" aria-controls="followers" aria-selected="false">
                             <span class="pe-1">Followers</span>
-                            <span class="badge rounded-pill bg-light text-dark">0</span>
+                            <span id="follower-count" class="badge rounded-pill bg-light text-dark">-</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -41,12 +46,12 @@
                         </button>
                     </li>
                 </ul>
-                <div class="tab-content mt-5">
+                <div class="tab-content pt-3">
                     <div class="tab-pane fade show active" id="feed" role="tabpanel" aria-labelledby="feed-tab">
                         
-                        <div class="input-group" th:if="${owner}">
+                        <div class="input-group mt-4" th:if="${owner}">
                             <textarea class="form-control" id="feed-post-textarea" rows="2" placeholder="Got something to say?" maxlength="120"></textarea>
-                            <button class="btn btn-success input-group-append">
+                            <button id="feed-post-button" class="btn btn-success input-group-append">
                                 <i class="bi bi-chat-left-text-fill pe-1"></i>
                                 <span>Post</span>
                             </button>
@@ -116,5 +121,82 @@
             </main>
             
         </div>
+        
+        <th:block th:include="fragments/layout :: scripts"></th:block>
+        <script th:inline="javascript"> var account = /*[[${account.username}]]*/ '';</script>
+        
+        <script>
+            var followButton = document.querySelector("#follow-button");
+            var followerCountBadge = document.querySelector("#follower-count");
+            
+            function updateFollowingStatus(status) {
+                console.log("Updating following status", status);
+                followerCountBadge.innerText = status.followerCount;
+                followButton.innerText = status.following ? "Unfollow" : "Follow";
+            }
+        </script>
+        
+        <script th:if="${owner}">
+            
+            var feedPostTextarea = document.querySelector("#feed-post-textarea");
+            var feedPostButton = document.querySelector("#feed-post-button");
+            
+            function onSuccess(data) {
+                console.log("Response", JSON.parse(data));
+                feedPostButton.disabled = false;
+                feedPostTextarea.value = "";
+            }
+            
+            function onError(error) {
+                console.log("Error", error);
+                feedPostButton.disabled = false;
+            }
+            
+            feedPostButton.addEventListener("click", function() {
+                feedPostButton.disabled = true;
+                var url = context + "api/posts";
+                var jsonString = JSON.stringify({ 
+                    content: feedPostTextarea.value
+                });
+                var request = new Request(url, "POST", "application/json", jsonString);
+                sendRequest(request, onSuccess, onError);
+            });
+            
+        </script>
+        
+        <script th:if="${!owner}">
+            
+            var followButton = document.querySelector("#follow-button");
+            
+            function onSuccess(data) {
+                var status = JSON.parse(data);
+                updateFollowingStatus(status);
+            }
+            
+            function onError(error) {
+                console.log("Error", error);
+            }
+            
+            function fetchStatus() {
+                var url = context + "api/follow-status/" + account;
+                var request = new Request(url, "GET");
+                sendRequest(request, onSuccess, onError);
+            }
+            
+            function toggleFollowingStatus() {
+                var url = context + "api/toggle-follow/" + account;
+                var request = new Request(url, "POST", "application/json", {});
+                sendRequest(request, onSuccess, onError);
+            }
+            
+            followButton.addEventListener("click", function() {
+                toggleFollowingStatus();
+            });
+        
+            
+            fetchStatus();
+            
+        </script>
+        
     </body>
 </html>

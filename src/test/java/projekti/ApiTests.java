@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import projekti.repositories.AccountRepository;
 import org.junit.Assert;
+import org.springframework.http.MediaType;
+import projekti.repositories.FollowingRepository;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -30,6 +32,9 @@ public class ApiTests {
     
     @Autowired
     private AccountRepository accountRepository;
+    
+    @Autowired
+    private FollowingRepository followingRepository;
     
     private MockHttpSession session;
     
@@ -67,5 +72,35 @@ public class ApiTests {
         
         Assert.assertEquals(2, accountNames.size());
     }
+    
+    @Test
+    public void postCreationSucceedsThroughApi() throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/posts").session(session)
+            .contentType(MediaType.APPLICATION_JSON).content("{ \"content\": \"test content\" }"))
+                .andExpect(status().isOk())
+                .andReturn();
+        
+        String resultStr = result.getResponse().getContentAsString();
+        Assert.assertTrue(resultStr.contains("test content"));
+        Assert.assertTrue(resultStr.contains("tester"));
+    }
+    
+    @Test
+    public void postWithoutContentFailsThroughApi() throws Exception {
+        mockMvc.perform(post("/api/posts").session(session)
+            .contentType(MediaType.APPLICATION_JSON).content("{ \"content\": \"\" }"))
+                .andExpect(status().is4xxClientError());
+    }
  
+    @Test
+    public void usersCanToggleFollowing() throws Exception {
+        // tester follows jsmith.
+        mockMvc.perform(post("/api/toggle-follow/jsmith").session(session)).andExpect(status().isOk());
+        Assert.assertTrue(followingRepository.isFollowing("jsmith", "tester"));
+        
+        // tester unfollows jsmith.
+        mockMvc.perform(post("/api/toggle-follow/jsmith").session(session)).andExpect(status().isOk());
+        Assert.assertFalse(followingRepository.isFollowing("jsmith", "tester"));
+    }
+    
 }
