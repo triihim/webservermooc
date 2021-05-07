@@ -16,10 +16,10 @@
         <header th:fragment="header">
             <nav class="navbar navbar-light bg-light">
                 <div class="container-fluid">
-                    <form>
+                    <form th:action="@{/account-search}" method="get">
                         <div class="input-group">
-                            <input class="form-control" placeholder="Search users" aria-label="Search users" />
-                            <button class="btn btn-outline-secondary input-group-append">
+                            <input class="form-control" placeholder="Search users" aria-label="Search users" name="query" />
+                            <button class="btn btn-outline-secondary input-group-append" type="submit">
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
@@ -27,7 +27,7 @@
                     <div class="d-flex">
                         <div class="align-self-center me-3 d-none d-sm-block">
                             <img id="logged-in-image" class="me-1" />
-                            <span id="logged-in-name" th:text ="${#authentication.getName()}"></span>
+                            <a id="logged-in-name" th:href="@{/account/{username}(username=${#authentication.getName()})}" th:text ="${#authentication.getName()}"></a>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -35,11 +35,15 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
-                                    <a class="text-decoration-none dropdown-item" href="#">Profile</a>
+                                    <a class="text-decoration-none dropdown-item" th:href="@{/account/{username}(username=${#authentication.getName()})}">Profile</a>
                                 </li>
                                 <hr class="m-2" />
                                 <li>
-                                    <a id="logout-button" class="text-decoration-none dropdown-item" href="#"><span class="text-danger">Logout</span></a>
+                                    <form th:action="@{/logout}" method="post">
+                                        <button type="submit" id="logout-button" class="btn btn-link text-decoration-none dropdown-item">
+                                            <span class="text-danger">Logout</span>
+                                        </button>
+                                    </form>
                                 </li>
                             </ul>
                         </div>

@@ -1,5 +1,7 @@
 package projekti.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +25,7 @@ public class Account extends AbstractPersistable<Long> {
     @Column(unique = true)
     private String username;
     
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // For situations where entity is returned as is.
     private String password;
     
     @OneToOne

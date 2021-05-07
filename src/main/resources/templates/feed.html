@@ -1,0 +1,49 @@
+<div th:each="post : ${feed}" class="post d-flex flex-column my-4" th:attr="data-postId=${post.id}">
+    <div class="d-flex align-items-end justify-content-between">
+        <p class="post-sender m-0">
+            <a th:href="@{/account/{username}(username=${post.owner})}" th:text="${post.owner}"></a>
+        </p>
+        <p class="post-timestamp m-0 text-muted" th:text="${post.createdAt}"></p>
+    </div>
+    <div class="post-content mt-1">
+        <p th:text="${post.content}">
+        </p>
+    </div>
+
+    <div class="post-controls mb-3 d-flex">
+        <button class="like-button btn btn-outline-primary me-2" th:disabled="${!post.canLike}">
+            <i th:if="${!post.canLike}" class="bi bi-hand-thumbs-up-fill"></i>
+            <i th:if="${post.canLike}" class="bi bi-hand-thumbs-up"></i>
+            <span class="like-badge badge rounded-pill bg-light text-dark" th:text="${post.likes}">-</span>
+        </button>
+        <div class="input-group">
+            <input class="form-control" placeholder="Comment" maxlength="60" />
+            <button class="btn btn-outline-success input-group-append">
+                <i class="bi bi-chat-dots-fill"></i>
+            </button>
+        </div>
+    </div>
+
+    <!--/* TODO: implement comments 
+    <div class="post-comments">
+        <div class="post-comment">
+            <div class="d-flex align-items-end justify-content-between">
+                <p class="m-0"><a href="#">pasi</a></p>
+                <p class="comment-timestamp m-0 text-muted">05/05/2021 20:05</p>
+            </div>
+            <p>
+                 consectetur adipiscing elit
+            </p>
+        </div>
+        <div class="post-comment">
+            <div class="d-flex align-items-end justify-content-between">
+                <p class="m-0"><a href="#">pasi</a></p>
+                <p class="comment-timestamp m-0 text-muted">05/05/2021 20:05</p>
+            </div>
+            <p>
+                 consectetur adipiscing elit
+            </p>
+        </div>
+    </div>
+    */-->
+</div>

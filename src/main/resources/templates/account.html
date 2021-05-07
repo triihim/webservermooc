@@ -57,53 +57,13 @@
                             </button>
                         </div>
                         
-                        <div id="posts">
-                            <div class="post d-flex flex-column my-4">
-                                <div class="d-flex align-items-end justify-content-between">
-                                    <p class="post-sender m-0"><a href="#">masa</a></p>
-                                    <p class="post-timestamp m-0 text-muted">05/05/2021 19:25</p>
-                                </div>
-                                <div class="post-content mt-1">
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam malesuada auctor tellus quis sollicitudin. Pellentesque eleifend massa orci.
-                                    </p>
-                                </div>
-                                
-                                <div class="post-controls mb-3 d-flex">
-                                    <button class="like-button btn btn-outline-primary me-2">
-                                        <i class="bi bi-hand-thumbs-up-fill"></i>
-                                        <span class="badge rounded-pill bg-light text-dark">0</span>
-                                    </button>
-                                    <div class="input-group">
-                                        <input class="form-control" placeholder="Comment" maxlength="60" />
-                                        <button class="btn btn-outline-success input-group-append">
-                                            <i class="bi bi-chat-dots-fill"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="post-comments">
-                                    <div class="post-comment">
-                                        <div class="d-flex align-items-end justify-content-between">
-                                            <p class="m-0"><a href="#">pasi</a></p>
-                                            <p class="comment-timestamp m-0 text-muted">05/05/2021 20:05</p>
-                                        </div>
-                                        <p>
-                                             consectetur adipiscing elit
-                                        </p>
-                                    </div>
-                                    <div class="post-comment">
-                                        <div class="d-flex align-items-end justify-content-between">
-                                            <p class="m-0"><a href="#">pasi</a></p>
-                                            <p class="comment-timestamp m-0 text-muted">05/05/2021 20:05</p>
-                                        </div>
-                                        <p>
-                                             consectetur adipiscing elit
-                                        </p>
-                                    </div>
+                        <div id="posts" class="pt-3">
+                            <!--/* Fetched dynamically */-->
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                  <span class="sr-only"></span>
                                 </div>
                             </div>
-                            
                         </div>
                         
                     </div>
@@ -130,29 +90,79 @@
             var followerCountBadge = document.querySelector("#follower-count");
             
             function updateFollowingStatus(status) {
-                console.log("Updating following status", status);
                 followerCountBadge.innerText = status.followerCount;
                 followButton.innerText = status.following ? "Unfollow" : "Follow";
             }
+            
+            function handlePostLikeClick(buttonRef, id) {
+                buttonRef.disabled = true;
+                
+                function onSuccess(data) {
+                    var json = JSON.parse(data);
+                    buttonRef.querySelector(".like-badge").innerText = json.likes;
+                }
+                function onError(error) {
+                    buttonRef.disabled = false;
+                    console.error(error);
+                }
+                
+                var url = context + "api/posts/" + id + "/like";
+                var request = new Request(url, "POST");
+                sendRequest(request, onSuccess, onError);
+            }
+            
+            // NOTICE: Do not call before feed has been fetched.
+            function enhanceFeedFunctionality() {
+                var postWrappers = document.querySelectorAll(".post");
+                postWrappers.forEach(function(postEl) {
+                    var likeButton = postEl.querySelector(".like-button");
+                    likeButton.addEventListener("click", function() {
+                        handlePostLikeClick(likeButton, postEl.dataset.postid);
+                    });
+                });
+            }
+            
+            
+            // FEED FETCHING
+            
+            var postsParent = document.querySelector("#posts");
+            
+            function fetchFeed() {
+                function onSuccess(data) {
+                    postsParent.innerHTML = data;
+                    enhanceFeedFunctionality();
+                }
+                function onError(error) {
+                    console.error(error);
+                }
+                var url = context + "api/feed/" + account + "/html";
+                var request = new Request(url, "GET");
+                sendRequest(request, onSuccess, onError);
+            }
+            
+            fetchFeed();
+            
         </script>
         
         <script th:if="${owner}">
             
+            // POST CREATION
+            
             var feedPostTextarea = document.querySelector("#feed-post-textarea");
             var feedPostButton = document.querySelector("#feed-post-button");
             
-            function onSuccess(data) {
-                console.log("Response", JSON.parse(data));
-                feedPostButton.disabled = false;
-                feedPostTextarea.value = "";
-            }
+            function createPost() {
+                function onSuccess(data) {
+                    feedPostButton.disabled = false;
+                    feedPostTextarea.value = "";
+                    fetchFeed();
+                }
             
-            function onError(error) {
-                console.log("Error", error);
-                feedPostButton.disabled = false;
-            }
+                function onError(error) {
+                    console.error(error);
+                    feedPostButton.disabled = false;
+                }
             
-            feedPostButton.addEventListener("click", function() {
                 feedPostButton.disabled = true;
                 var url = context + "api/posts";
                 var jsonString = JSON.stringify({ 
@@ -160,7 +170,9 @@
                 });
                 var request = new Request(url, "POST", "application/json", jsonString);
                 sendRequest(request, onSuccess, onError);
-            });
+            }
+            
+            feedPostButton.addEventListener("click", createPost);
             
         </script>
         
@@ -189,11 +201,8 @@
                 sendRequest(request, onSuccess, onError);
             }
             
-            followButton.addEventListener("click", function() {
-                toggleFollowingStatus();
-            });
+            followButton.addEventListener("click", toggleFollowingStatus);
         
-            
             fetchStatus();
             
         </script>

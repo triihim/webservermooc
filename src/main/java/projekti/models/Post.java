@@ -1,10 +1,13 @@
 package projekti.models;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +20,8 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @AllArgsConstructor
 @Data
 public class Post extends AbstractPersistable<Long> {
-    
+
+    @Size(min = 1, max = 120)
     private String content;
     
     @ManyToOne
@@ -26,9 +30,10 @@ public class Post extends AbstractPersistable<Long> {
     @Setter(AccessLevel.NONE)
     private String ownerUsername;
 
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
     
     @OneToMany
+    @Basic(fetch = FetchType.EAGER)
     private List<ResourceLike> likes;
     
     @OneToMany

@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("No user found with username: " + username);
         } else {
             logger.info("User found with username: " + username);
-            return new User(account.getUsername(), account.getPassword(), Arrays.asList(new SimpleGrantedAuthority("USER")));
+            return new CustomUserDetails(account.getId(), account.getUsername(), account.getPassword(), Arrays.asList(new SimpleGrantedAuthority("USER")));
         }
     }
     

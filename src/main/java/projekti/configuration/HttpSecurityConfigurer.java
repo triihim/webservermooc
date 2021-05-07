@@ -15,7 +15,7 @@ public class HttpSecurityConfigurer {
             .anyRequest().authenticated();
 
             http.formLogin().permitAll().defaultSuccessUrl("/account");
-            http.logout();
+            http.logout().logoutSuccessUrl("/login");
     }
     
 }

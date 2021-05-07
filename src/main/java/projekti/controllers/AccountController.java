@@ -1,5 +1,6 @@
 package projekti.controllers;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import projekti.DTO.AccountDTO;
 import projekti.DTO.RegistrationDTO;
@@ -61,6 +63,13 @@ public class AccountController {
         model.addAttribute("account", dto);
         
         return "account";
+    }
+    
+    @GetMapping("/account-search")
+    public String usersPage(@RequestParam String query, Model model) {
+        List<AccountDTO> users = accountService.getAccountNamesContaining(query);
+        model.addAttribute("users", users);
+        return "users";
     }
     
 }

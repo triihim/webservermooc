@@ -49,10 +49,17 @@ public class AccountService {
         return dto;
     }
     
-    public List<String> getAccountNamesContaining(String partial) {
-        return accountRepository.findByUsernameContainingIgnoreCase(partial)
+    public List<AccountDTO> getAccountNamesContaining(String partial) {
+        return accountRepository.findByPartialNameOrUsername(partial)
                 .stream()
-                .map(account -> account.getUsername())
+                .map(account -> {
+                    AccountDTO dto = new AccountDTO();
+                    dto.setFirstName(account.getFirstName());
+                    dto.setLastName(account.getLastName());
+                    dto.setUsername(account.getUsername());
+                    dto.setProfilePictureId(account.getProfilePictureId());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
     

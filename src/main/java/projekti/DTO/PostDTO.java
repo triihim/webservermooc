@@ -1,6 +1,6 @@
 package projekti.DTO;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +10,16 @@ import lombok.NoArgsConstructor;
 @Data
 public class PostDTO {
     
+    private long id;
+    
     private String content;
     
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
     
     private String owner;
+    
+    private int likes;
+    
+    private boolean canLike;
     
 }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/layout :: head(title='User search')"></head>
+    <body>
+        <div id="page-container" class="container">
+            <header th:replace="fragments/layout :: header"></header>
+            
+            <main>
+                <p th:each="user : ${users}">
+                    <span th:text="${user.username}"></span>
+                    <span th:text="${user.firstName}"></span>
+                    <span th:text="${user.lastName}"></span>
+                </p>
+            </main>
+            
+        </div>
+        
+        <th:block th:include="fragments/layout :: scripts"></th:block>
+        
+    </body>
+</html>

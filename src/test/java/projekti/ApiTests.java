@@ -20,6 +20,9 @@ import projekti.repositories.AccountRepository;
 import org.junit.Assert;
 import org.springframework.http.MediaType;
 import projekti.repositories.FollowingRepository;
+import projekti.repositories.PostRepository;
+import projekti.services.PostService;
+import projekti.models.Post;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -35,6 +38,12 @@ public class ApiTests {
     
     @Autowired
     private FollowingRepository followingRepository;
+    
+    @Autowired
+    private PostService postService;
+    
+    @Autowired
+    private PostRepository postRepository;
     
     private MockHttpSession session;
     
@@ -103,4 +112,8 @@ public class ApiTests {
         Assert.assertFalse(followingRepository.isFollowing("jsmith", "tester"));
     }
     
+    @Test
+    public void postCannotBeLikedTwice() throws Exception {
+        // TODO
+    }
 }

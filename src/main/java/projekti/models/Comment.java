@@ -1,6 +1,6 @@
 package projekti.models;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -21,8 +21,8 @@ public class Comment extends AbstractPersistable<Long> {
     @ManyToOne
     private Account owner;
     
-    private ZonedDateTime createdAt;
+    private LocalDateTime createdAt;
     
-    @OneToMany
-    private List<ResourceLike> likes;
+    @ManyToOne
+    private Post post;
 }
