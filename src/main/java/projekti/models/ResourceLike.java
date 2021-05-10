@@ -1,6 +1,7 @@
 package projekti.models;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import lombok.Data;
 import org.springframework.data.jpa.domain.AbstractPersistable;
@@ -9,7 +10,7 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @Data
 public class ResourceLike extends AbstractPersistable<Long> {
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Account owner;
     
 }

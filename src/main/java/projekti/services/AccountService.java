@@ -5,10 +5,14 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import projekti.DTO.AccountDTO;
 import projekti.DTO.RegistrationDTO;
+import projekti.DTO.UserSearchDTO;
 import projekti.repositories.AccountRepository;
 import projekti.models.Account;
 
@@ -35,7 +39,7 @@ public class AccountService {
     }
     
     public AccountDTO getAccount(String username) {
-        Account account = accountRepository.findByUsername(username);
+        Account account = accountRepository.findByUsernameIgnoreCase(username);
         
         if(account == null) return null;
         
@@ -49,8 +53,10 @@ public class AccountService {
         return dto;
     }
     
-    public List<AccountDTO> getAccountNamesContaining(String partial) {
-        return accountRepository.findByPartialNameOrUsername(partial)
+    public UserSearchDTO getAccountNamesContaining(String partial, int page) {
+        final int pageSize = 10;
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("lastName").ascending().and(Sort.by("firstName").ascending()));
+        List<AccountDTO> accounts = accountRepository.findByPartialNameOrUsername(partial, pageable)
                 .stream()
                 .map(account -> {
                     AccountDTO dto = new AccountDTO();
@@ -61,6 +67,15 @@ public class AccountService {
                     return dto;
                 })
                 .collect(Collectors.toList());
+        
+        int totalPages = partial.length() > 0 ? (accounts.size() + pageSize - 1) / pageSize
+                : (int)(accountRepository.count() + pageSize - 1) / pageSize;
+        
+        totalPages += totalPages == 0 ? 1 : 0;
+        
+        if(page > totalPages) throw new RuntimeException("Page cannot exceed total pages");
+        
+        return new UserSearchDTO(accounts, partial, page, totalPages);
     }
     
     private String capitalize(String str) {

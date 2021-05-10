@@ -1,10 +1,10 @@
 package projekti.models;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,9 +16,10 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @Data
 public class Comment extends AbstractPersistable<Long> {
     
+    @Size(min = 1, max = 60)
     private String content;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private Account owner;
     
     private LocalDateTime createdAt;

@@ -1,11 +1,13 @@
 package projekti.models;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -33,11 +35,12 @@ public class Post extends AbstractPersistable<Long> {
     private LocalDateTime createdAt;
     
     @OneToMany
-    @Basic(fetch = FetchType.EAGER)
     private List<ResourceLike> likes;
     
     @OneToMany
     private List<Comment> comments;
+    
+    private long likeCount;
     
     public void setOwner(Account a) {
         this.owner = a;

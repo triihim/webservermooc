@@ -1,13 +1,12 @@
-<div th:each="post : ${feed}" class="post d-flex flex-column my-4" th:attr="data-postId=${post.id}">
+<div th:each="post : ${feed}" class="post d-flex flex-column my-4" th:attr="data-postid=${post.id}">
     <div class="d-flex align-items-end justify-content-between">
         <p class="post-sender m-0">
             <a th:href="@{/account/{username}(username=${post.owner})}" th:text="${post.owner}"></a>
         </p>
-        <p class="post-timestamp m-0 text-muted" th:text="${post.createdAt}"></p>
+        <p class="timestamp post-timestamp m-0 text-muted" th:text="${post.createdAt}"></p>
     </div>
     <div class="post-content mt-1">
-        <p th:text="${post.content}">
-        </p>
+        <p th:text="${post.content}"></p>
     </div>
 
     <div class="post-controls mb-3 d-flex">
@@ -17,33 +16,21 @@
             <span class="like-badge badge rounded-pill bg-light text-dark" th:text="${post.likes}">-</span>
         </button>
         <div class="input-group">
-            <input class="form-control" placeholder="Comment" maxlength="60" />
-            <button class="btn btn-outline-success input-group-append">
+            <input th:disabled="${!post.canComment}" class="comment-field form-control" th:placeholder="${post.canComment ? 'Comment' : 'Only followers of the author can comment'}" maxlength="60" />
+            <button th:disabled="${!post.canComment}" class="comment-button btn btn-outline-success input-group-append">
                 <i class="bi bi-chat-dots-fill"></i>
             </button>
         </div>
     </div>
-
-    <!--/* TODO: implement comments 
+   
     <div class="post-comments">
-        <div class="post-comment">
+        <div class="post-comment" th:each="comment : ${post.comments}">
             <div class="d-flex align-items-end justify-content-between">
-                <p class="m-0"><a href="#">pasi</a></p>
-                <p class="comment-timestamp m-0 text-muted">05/05/2021 20:05</p>
+                <p class="m-0"><a href="#" th:text="${comment.author}"></a></p>
+                <p class="timestamp comment-timestamp m-0 text-muted" th:text="${comment.createdAt}"></p>
             </div>
-            <p>
-                 consectetur adipiscing elit
-            </p>
-        </div>
-        <div class="post-comment">
-            <div class="d-flex align-items-end justify-content-between">
-                <p class="m-0"><a href="#">pasi</a></p>
-                <p class="comment-timestamp m-0 text-muted">05/05/2021 20:05</p>
-            </div>
-            <p>
-                 consectetur adipiscing elit
-            </p>
+            <p th:text="${comment.content}"></p>
         </div>
     </div>
-    */-->
+    
 </div>

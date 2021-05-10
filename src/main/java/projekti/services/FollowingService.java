@@ -1,11 +1,13 @@
 package projekti.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import projekti.DTO.AccountDTO;
 import projekti.helpers.SecurityHelper;
 import projekti.helpers.TimestampHelper;
 import projekti.models.Account;
@@ -27,8 +29,8 @@ public class FollowingService {
     
     @Transactional
     public FollowingDTO toggleFollowing(String username) {
-        Account follower = accountRepository.findByUsername(SecurityHelper.requesterUsername());
-        Account followee = accountRepository.findByUsername(username);
+        Account follower = accountRepository.findByUsernameIgnoreCase(SecurityHelper.requesterUsername());
+        Account followee = accountRepository.findByUsernameIgnoreCase(username);
         
         if(followee == null) throw new RuntimeException("No user found to toggle follow for: " + username);
         
@@ -59,7 +61,7 @@ public class FollowingService {
     }
     
     public FollowingDTO getFollowingStatus(String username) {
-        Account followee = accountRepository.findByUsername(username);
+        Account followee = accountRepository.findByUsernameIgnoreCase(username);
         if(followee == null) throw new RuntimeException("No user found to toggle follow for: " + username);
         
         boolean isFollowedByRequester = followingRepository.isFollowing(followee.getUsername(), SecurityHelper.requesterUsername());
@@ -67,5 +69,25 @@ public class FollowingService {
         return new FollowingDTO(isFollowedByRequester, followee.getUsername(), followee.getFollowings().size());
     }
     
+    public List<AccountDTO> getFollowers(String username) {
+        return accountRepository.findFollowers(username)
+                .stream()
+                .map(f -> {
+                    return new AccountDTO(f.getFirstName(), f.getLastName(), f.getUsername(), f.getProfilePictureId());
+                })
+                .collect(Collectors.toList());
+    }
     
+    public List<AccountDTO> getFollowees(String username) {
+        return accountRepository.findAccountsByFollowings_follower_username(username)
+                .stream()
+                .map(f -> {
+                    return new AccountDTO(f.getFirstName(), f.getLastName(), f.getUsername(), f.getProfilePictureId());
+                })
+                .collect(Collectors.toList());
+    }
+    
+    public void blockFollowing(String username) {
+        
+    }
 }

@@ -15,16 +15,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import projekti.DTO.AccountDTO;
+import projekti.DTO.CommentDTO;
 import projekti.DTO.FollowingDTO;
 import projekti.DTO.PostDTO;
 import projekti.DTO.PostLikeResponseDTO;
 import projekti.helpers.SecurityHelper;
 import projekti.models.Post;
 import projekti.services.AccountService;
+import projekti.services.CommentService;
 import projekti.services.FollowingService;
 import projekti.services.PostService;
 
@@ -42,12 +45,10 @@ public class AjaxController {
     private FollowingService followingService;
     
     @Autowired
-    private TemplateEngine templateEngine;
+    private CommentService commentService;
     
-    @GetMapping("/accounts")
-    public List<AccountDTO> accounts(@RequestParam Optional<String> filter) {
-        return accountService.getAccountNamesContaining(filter.orElse(""));
-    }
+    @Autowired
+    private TemplateEngine templateEngine;
     
     @PostMapping("/posts")
     public Post createPost(@RequestBody PostDTO dto) {
@@ -76,7 +77,7 @@ public class AjaxController {
     
     @GetMapping("/feed/{username}")
     public List<PostDTO> getFeed(@PathVariable String username) {
-        return postService.getFeed(username);
+        return postService.getUserFeed(username);
     }
     
     @RequestMapping(
@@ -86,10 +87,48 @@ public class AjaxController {
     )
     @ResponseBody
     public String getFeedAsHTML(@PathVariable String username, HttpServletRequest request, HttpServletResponse response) {
-        List<PostDTO> feed = postService.getFeed(username);
+        List<PostDTO> feed = postService.getUserFeed(username);
         WebContext ctx = new WebContext(request, response, request.getServletContext());
         ctx.setVariable("feed", feed);
         return templateEngine.process("feed", ctx);
     }
     
+    @PostMapping("/posts/{id}/comment")
+    public CommentDTO commentPost(@PathVariable Long id, @RequestBody CommentDTO dto) {
+        if(dto.getContent().length() < 1 || dto.getContent().length() > 60) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Comment length is limited to 1-60 characters");
+        }
+        return commentService.comment(id, dto.getContent());
+    }
+    
+    @GetMapping("/followers/{username}")
+    public List<AccountDTO> getFollowers(@PathVariable String username) {
+        return followingService.getFollowers(username);
+    }
+    
+    @RequestMapping(
+        value = "/followers/{username}/html", 
+        method = RequestMethod.GET, 
+        produces = "text/html"
+    )
+    @ResponseBody
+    public String getFollowers(@PathVariable String username, HttpServletRequest request, HttpServletResponse response) {
+        List<AccountDTO> accounts =  followingService.getFollowers(username);
+        WebContext ctx = new WebContext(request, response, request.getServletContext());
+        ctx.setVariable("users", accounts);
+        return templateEngine.process("followlist", ctx);
+    }
+    
+    @RequestMapping(
+        value = "/followees/{username}/html", 
+        method = RequestMethod.GET, 
+        produces = "text/html"
+    )
+    @ResponseBody
+    public String getFollowees(@PathVariable String username, HttpServletRequest request, HttpServletResponse response) {
+        List<AccountDTO> accounts =  followingService.getFollowees(username);
+        WebContext ctx = new WebContext(request, response, request.getServletContext());
+        ctx.setVariable("users", accounts);
+        return templateEngine.process("followlist", ctx);
+    }
 }

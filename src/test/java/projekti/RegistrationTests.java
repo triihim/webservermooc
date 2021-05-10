@@ -39,7 +39,7 @@ public class RegistrationTests {
                     .andExpect(redirectedUrl("/login"))
                     .andExpect(status().is3xxRedirection());
         
-        Assert.assertTrue(accountRepository.findByUsername("uname") != null);
+        Assert.assertTrue(accountRepository.findByUsernameIgnoreCase("uname") != null);
     }
     
     @Test
@@ -56,7 +56,7 @@ public class RegistrationTests {
         String content = result.getResponse().getContentAsString();
         
         Assert.assertTrue(content.contains("passwords do not match"));
-        Assert.assertTrue(accountRepository.findByUsername("uname2") == null);
+        Assert.assertTrue(accountRepository.findByUsernameIgnoreCase("uname2") == null);
     }
             
     

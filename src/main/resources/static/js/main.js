@@ -40,3 +40,10 @@ function sendRequest(request, onSuccess, onError) {
         xhr.send();
     }
 }
+
+function formatServerDateTime(datetime) {
+    var dateOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+    var timeOptions = { hour12: false };
+    var date = new Date(datetime + "z");
+    return date.toLocaleDateString("en-GB", dateOptions) + " " + date.toLocaleTimeString("en-GB", timeOptions);
+}

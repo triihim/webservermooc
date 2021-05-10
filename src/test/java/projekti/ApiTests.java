@@ -57,32 +57,6 @@ public class ApiTests {
     }
     
     @Test
-    public void searchAccountNamesWithoutFilterReturnsAll() throws Exception {
-        MvcResult result = mockMvc.perform(get("/api/accounts").session(session))
-                .andExpect(status().isOk())
-                .andReturn();
-        
-        String resultStr = result.getResponse().getContentAsString();
-        List<String> accountNames = mapper.readValue(resultStr, new TypeReference<List<String>>(){});
-        
-        Assert.assertEquals(accountNames.size(), accountRepository.findAll().size());
-    }
-    
-    @Test
-    public void searchAccountNamesWithFilterReturnsCorrectNames() throws Exception {
-        String filter = "js"; // Should match the two usernames: jsmith and jschultz. (populated in TestUtils.populateMockAccounts).
-        
-        MvcResult result = mockMvc.perform(get("/api/accounts?filter=" + filter).session(session))
-                .andExpect(status().isOk())
-                .andReturn();
-        
-        String resultStr = result.getResponse().getContentAsString();
-        List<String> accountNames = mapper.readValue(resultStr, new TypeReference<List<String>>(){});
-        
-        Assert.assertEquals(2, accountNames.size());
-    }
-    
-    @Test
     public void postCreationSucceedsThroughApi() throws Exception {
         MvcResult result = mockMvc.perform(post("/api/posts").session(session)
             .contentType(MediaType.APPLICATION_JSON).content("{ \"content\": \"test content\" }"))

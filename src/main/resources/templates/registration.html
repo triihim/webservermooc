@@ -3,32 +3,44 @@
     <head th:replace="fragments/layout :: head(title='Register')"></head>
     <body>
 
-        <h1>Register</h1>
+        <div id="page-container" class="container">
         
-        <form th:action="@{/register}" th:object="${registrationDTO}" th:method="POST">
-            <div>
-                firstname <input type="text" th:field="*{firstName}" />
-                <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
-            </div>
-            <div>
-                lastname <input type="text" th:field="*{lastName}" />
-                <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
-            </div>
-            <div>
-                username <input type="text" th:field="*{username}" />
-                <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
-            </div>
-            <div>
-                password <input type="password" th:field="*{password}" />
-                <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
-            </div>
-            <div>
-                confirm password <input type="password" th:field="*{passwordConfirm}" />
-            </div>
-            <div>
-                <button type="submit">register</button>
-            </div>
-        </form>
+            <main>
+                <h1 class="pb-4">Register</h1>
+                <form th:action="@{/register}" th:object="${registrationDTO}" th:method="POST">
+                    <div class="mb-3">
+                        <label class="form-label" for="firstname">First name</label>
+                        <input id="firstname" class="form-control" th:field="*{firstName}" />
+                        <p class="text-danger fst-italic" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="lastname">Last name</label>
+                        <input id="lastname" class="form-control" th:field="*{lastName}" />
+                        <p class="text-danger fst-italic" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="username">Username</label>
+                        <input id="username" class="form-control" th:field="*{username}" />
+                        <p class="text-danger fst-italic" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Password</label>
+                        <input id="password" class="form-control" th:field="*{password}" type="password" />
+                        <p class="text-danger fst-italic" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></p>
+                    </div>
+                    <div class="mb-5">
+                        <label class="form-label" for="passwordconfirm">Confirm password</label>
+                        <input id="passwordconfirm" class="form-control" th:field="*{passwordConfirm}" type="password" />
+                    </div>
+                    <div class="d-flex flex-column align-items-center">
+                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                        <p class="mt-4">Already registered? <a th:href="@{/login}">Login</a></p>
+                    </div>
 
+                </form>
+            
+            </main>
+            
+        </div>
     </body>
 </html>

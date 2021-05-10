@@ -9,7 +9,7 @@
                 
                 <div class="d-flex flex-column justify-content-center align-items-center">
                     <img id="profile-picture" />
-                    <h1 th:text="${account.username}"></h1>
+                    <h1 class="p-2" th:text="${account.username}"></h1>
                     <p>
                         <span th:text="${account.firstName + ' ' + account.lastName}"></span>
                     </p>
@@ -24,25 +24,21 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed" type="button" role="tab" aria-controls="feed" aria-selected="true">
                             <span class="pe-1">Feed</span>
-                            <span class="badge rounded-pill bg-light text-dark">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="followers-tab" data-bs-toggle="tab" data-bs-target="#followers" type="button" role="tab" aria-controls="followers" aria-selected="false">
                             <span class="pe-1">Followers</span>
-                            <span id="follower-count" class="badge rounded-pill bg-light text-dark">-</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="following-tab" data-bs-toggle="tab" data-bs-target="#following" type="button" role="tab" aria-controls="following" aria-selected="false">
                             <span class="pe-1">Following</span>
-                            <span class="badge rounded-pill bg-light text-dark">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="photos-tab" data-bs-toggle="tab" data-bs-target="#photos" type="button" role="tab" aria-controls="photos" aria-selected="false">
                             <span class="pe-1">Photos</span>
-                            <span class="badge rounded-pill bg-light text-dark">0</span>
                         </button>
                     </li>
                 </ul>
@@ -68,10 +64,20 @@
                         
                     </div>
                     <div class="tab-pane fade" id="followers" role="tabpanel" aria-labelledby="followers-tab">
-                        Followers
+                         <!--/* Fetched dynamically */-->
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                              <span class="sr-only"></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="tab-pane fade" id="following" role="tabpanel" aria-labelledby="following-tab">
-                        Following
+                        <!--/* Fetched dynamically */-->
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                              <span class="sr-only"></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="tab-pane fade" id="photos" role="tabpanel" aria-labelledby="photos-tab">
                         Photos
@@ -87,10 +93,8 @@
         
         <script>
             var followButton = document.querySelector("#follow-button");
-            var followerCountBadge = document.querySelector("#follower-count");
             
             function updateFollowingStatus(status) {
-                followerCountBadge.innerText = status.followerCount;
                 followButton.innerText = status.following ? "Unfollow" : "Follow";
             }
             
@@ -100,6 +104,9 @@
                 function onSuccess(data) {
                     var json = JSON.parse(data);
                     buttonRef.querySelector(".like-badge").innerText = json.likes;
+                    buttonRef.removeChild(buttonRef.querySelector("i"));
+                    var thumbHtml = "<i class='bi bi-hand-thumbs-up-fill'></i>";
+                    buttonRef.innerHTML = thumbHtml + buttonRef.innerHTML;
                 }
                 function onError(error) {
                     buttonRef.disabled = false;
@@ -111,14 +118,75 @@
                 sendRequest(request, onSuccess, onError);
             }
             
+            function commentHtml(comment) {
+                return (
+                    '<div class="post-comment">' +
+                        '<div class="d-flex align-items-end justify-content-between">' +
+                            '<p class="m-0"><a href="' + context + 'account/' + comment.author + '">' + comment.author + '</a></p>' +
+                            '<p class="timestamp comment-timestamp m-0 text-muted">' + formatServerDateTime(comment.createdAt) + '</p>' +
+                        '</div>' +
+                        '<p>' + comment.content + '</p>' +
+                    '</div>'
+                );
+            }
+            
+            function handlePostCommentSubmit(inputField, submitButton, postId) {
+                function onSuccess(data) {
+                    var json = JSON.parse(data);
+                    inputField.value = "";
+                    submitButton.disabled = false;
+                    var commentsSection = document.querySelector("[data-postid='" + postId + "'] .post-comments");
+                    var commentCount = commentsSection.querySelectorAll(".post-comment").length;
+                    
+                    if(commentCount >= 10) {
+                        commentsSection.removeChild(commentsSection.lastElementChild);
+                    }
+                    
+                    var existingHtml = commentsSection.innerHTML;
+                    
+                    commentsSection.innerHTML = commentHtml(json) + existingHtml;
+                }
+                function onError(error) {
+                    submitButton.disabled = false;
+                    console.error(error);
+                }
+                
+                if(inputField.value.length > 0) {
+                    submitButton.disabled = true;
+                    var url = context + "api/posts/" + postId + "/comment";
+                    var request = new Request(url, "POST", "application/json", JSON.stringify({ content: inputField.value }));
+                    sendRequest(request, onSuccess, onError);
+                }
+            }
+            
             // NOTICE: Do not call before feed has been fetched.
             function enhanceFeedFunctionality() {
                 var postWrappers = document.querySelectorAll(".post");
                 postWrappers.forEach(function(postEl) {
+                    
                     var likeButton = postEl.querySelector(".like-button");
                     likeButton.addEventListener("click", function() {
                         handlePostLikeClick(likeButton, postEl.dataset.postid);
                     });
+                    
+                    var commentButton = postEl.querySelector(".comment-button");
+                    var commentField = postEl.querySelector(".comment-field");
+                    commentButton.addEventListener("click", function() {
+                        handlePostCommentSubmit(commentField, commentButton, postEl.dataset.postid);
+                    });
+                    
+                    commentField.addEventListener("keyup", function(e) {
+                        if(e.keyCode === 13) { // enter
+                            e.preventDefault();
+                            commentButton.click();
+                        } 
+                    });
+                    
+                });
+                
+                var timestampEls = document.querySelectorAll(".timestamp");
+                timestampEls.forEach(function(tEl) {
+                    tEl.innerText = formatServerDateTime(tEl.innerText);
                 });
             }
             
@@ -142,6 +210,47 @@
             
             fetchFeed();
             
+            
+            // FOLLOWERS FETCHING (on demand)
+            
+            var followersTabButton = document.querySelector("#followers-tab");
+            var followersTab = document.querySelector("#followers");
+            
+            followersTabButton.addEventListener("click", function() {
+            
+                function onSuccess(data) {
+                    followersTab.innerHTML = data;
+                }
+                function onError(error) {
+                    console.error(error);
+                }
+                var url = context + "api/followers/" + account + "/html";
+                var request = new Request(url, "GET");
+                sendRequest(request, onSuccess, onError);
+            
+            });
+            
+            
+            // FOLLOWEES FETCHING (on demand)
+            
+            var followingTabButton = document.querySelector("#following-tab");
+            var followingTab = document.querySelector("#following");
+            
+            followingTabButton.addEventListener("click", function() {
+            
+                function onSuccess(data) {
+                    followingTab.innerHTML = data;
+                }
+                function onError(error) {
+                    console.error(error);
+                }
+                var url = context + "api/followees/" + account + "/html";
+                var request = new Request(url, "GET");
+                sendRequest(request, onSuccess, onError);
+            
+            });
+            
+            
         </script>
         
         <script th:if="${owner}">
@@ -163,16 +272,25 @@
                     feedPostButton.disabled = false;
                 }
             
-                feedPostButton.disabled = true;
-                var url = context + "api/posts";
-                var jsonString = JSON.stringify({ 
-                    content: feedPostTextarea.value
-                });
-                var request = new Request(url, "POST", "application/json", jsonString);
-                sendRequest(request, onSuccess, onError);
+                if(feedPostTextarea.value.length > 0) {
+                    feedPostButton.disabled = true;
+                    var url = context + "api/posts";
+                    var jsonString = JSON.stringify({ 
+                        content: feedPostTextarea.value
+                    });
+                    var request = new Request(url, "POST", "application/json", jsonString);
+                    sendRequest(request, onSuccess, onError);
+                }
             }
             
             feedPostButton.addEventListener("click", createPost);
+            
+            feedPostTextarea.addEventListener("keydown", function(e) {
+                if(e.keyCode === 13) { // enter
+                    e.preventDefault();
+                    feedPostButton.click();
+                }
+            });
             
         </script>
         
@@ -183,6 +301,7 @@
             function onSuccess(data) {
                 var status = JSON.parse(data);
                 updateFollowingStatus(status);
+                fetchFeed();
             }
             
             function onError(error) {

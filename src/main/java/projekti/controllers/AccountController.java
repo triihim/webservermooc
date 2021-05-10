@@ -1,21 +1,17 @@
 package projekti.controllers;
 
-import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import projekti.DTO.AccountDTO;
-import projekti.DTO.RegistrationDTO;
+import projekti.DTO.UserSearchDTO;
 import projekti.services.AccountService;
 import projekti.helpers.SecurityHelper;
 
@@ -24,27 +20,6 @@ public class AccountController {
     
     @Autowired
     private AccountService accountService;
-    
-    @GetMapping("/register")
-    public String registrationPage(@ModelAttribute RegistrationDTO registrationDTO) {
-        return "registration";
-    }
-    
-    @PostMapping("/register")
-    public String register(@Validated @ModelAttribute RegistrationDTO dto, BindingResult bindingResult, Model model) {
-        
-        if(!dto.passwordsMatch()) {
-            bindingResult.rejectValue("password", "registration.error", "passwords do not match");
-        }
-        
-        if(bindingResult.hasErrors()) {
-            return "registration";
-        }
-        
-        accountService.register(dto);
-        
-        return "redirect:/login";
-    }
     
     @GetMapping("/account")
     public String accountPageRedirect(Authentication authentication) {
@@ -66,9 +41,12 @@ public class AccountController {
     }
     
     @GetMapping("/account-search")
-    public String usersPage(@RequestParam String query, Model model) {
-        List<AccountDTO> users = accountService.getAccountNamesContaining(query);
-        model.addAttribute("users", users);
+    public String usersPage(@RequestParam String query, @RequestParam Optional<Integer> page, Model model) {
+        if(page.isPresent() && page.get() < 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page cannot be negative");
+        UserSearchDTO result = accountService.getAccountNamesContaining(query, page.orElse(0));
+        model.addAttribute("users", result.getUsers());
+        model.addAttribute("currentPage", result.getCurrentPage());
+        model.addAttribute("totalPages", result.getTotalPages());
         return "users";
     }
     

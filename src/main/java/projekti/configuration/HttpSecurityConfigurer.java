@@ -7,15 +7,17 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 public class HttpSecurityConfigurer {
     
     public void configure(HttpSecurity http) throws Exception {
+        http.requestCache().disable();
         http.authorizeRequests()
+            .antMatchers("/static/**", "/css/**", "/js/**").permitAll() // Some claim these are permitted by default. Did not work.
+            .antMatchers("/login*").permitAll()
             .antMatchers("/register").permitAll()
-            .antMatchers("/login").permitAll()
             .antMatchers("/account").hasAnyAuthority("USER")
             .antMatchers("/api").hasAnyAuthority("USER")
-            .anyRequest().authenticated();
-
-            http.formLogin().permitAll().defaultSuccessUrl("/account");
-            http.logout().logoutSuccessUrl("/login");
+            .anyRequest().authenticated()
+            .and()
+            .formLogin().loginPage("/login").permitAll().defaultSuccessUrl("/account", true)
+            .and()
+            .logout().deleteCookies("JSESSIONID");
     }
-    
 }

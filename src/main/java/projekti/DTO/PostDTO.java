@@ -1,6 +1,7 @@
 package projekti.DTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,12 @@ public class PostDTO {
     
     private String owner;
     
-    private int likes;
+    private long likes;
     
     private boolean canLike;
+    
+    private boolean canComment;
+    
+    private List<CommentDTO> comments;
     
 }
