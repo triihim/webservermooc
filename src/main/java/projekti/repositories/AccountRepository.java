@@ -1,5 +1,6 @@
 package projekti.repositories;
 
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -29,5 +30,17 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             + "join Following f on f.followee.id = :id "
             + "and f.follower.id = a.id")
     public List<Account> findAccountsByFolloweeId(@Param("id") long followeeId);
+
+    @Query("select a from Account a "
+         + "join Following f on f.followee.id = a.id "
+         + "where f.isFollowerBlocked = true and f.follower.username = :user")
+    public List<Account> findBlockersOf(@Param("user") String username);
+    
+    @Query("select a from Account a "
+         + "join Following f on f.followee.id = a.id "
+         + "where f.isFollowerBlocked = true and (f.follower.username = :user or f.followee.username = :user)")
+    public List<Account> findBlockedBothways(@Param("user") String username);
+    
+    public List<Account> findByUsernameIn(Collection<String> usernames);
 
 }

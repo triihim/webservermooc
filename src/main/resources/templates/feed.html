@@ -1,5 +1,5 @@
 <p th:if="${feed.empty}" class="text-center p-5">
-    No posts to show yet
+    <span>No posts to show</span>
 </p>
 <div th:each="post : ${feed}" class="post d-flex flex-column my-4" th:attr="data-postid=${post.id}">
     <div class="d-flex align-items-end justify-content-between">

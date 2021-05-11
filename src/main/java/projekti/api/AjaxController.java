@@ -90,6 +90,7 @@ public class AjaxController {
         List<PostDTO> feed = postService.getUserFeed(username);
         WebContext ctx = new WebContext(request, response, request.getServletContext());
         ctx.setVariable("feed", feed);
+        ctx.setVariable("feedOwner", username);
         return templateEngine.process("feed", ctx);
     }
     

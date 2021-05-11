@@ -14,12 +14,16 @@ import projekti.DTO.AccountDTO;
 import projekti.DTO.UserSearchDTO;
 import projekti.services.AccountService;
 import projekti.helpers.SecurityHelper;
+import projekti.services.FollowingService;
 
 @Controller
 public class AccountController {
     
     @Autowired
     private AccountService accountService;
+    
+    @Autowired
+    private FollowingService followingService;
     
     @GetMapping("/account")
     public String accountPageRedirect(Authentication authentication) {
@@ -36,6 +40,7 @@ public class AccountController {
         
         model.addAttribute("owner", SecurityHelper.accessorIsLoggedInUser(username));
         model.addAttribute("account", dto);
+        model.addAttribute("isBlocked", followingService.isBlocked(username, SecurityHelper.requesterUsername()));
         
         return "account";
     }

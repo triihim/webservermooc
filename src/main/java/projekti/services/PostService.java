@@ -88,14 +88,6 @@ public class PostService {
     public List<PostDTO> getUserFeed(String username) {
         Account account = accountRepository.findByUsernameIgnoreCase(username);
         
-        // List of users whose posts appear on the feed.
-        List<String> usersOfInterest = accountRepository.findAccountsByFollowerId(account.getId())
-                .stream()
-                .map(a -> a.getUsername())
-                .collect(Collectors.toList());
-        
-        usersOfInterest.add(username);
-        
         // Used to set canLike-flag.
         List<Long> likedByRequester = likeRepository.findPostsLikedByUserId(SecurityHelper.requesterId())
                 .stream()
@@ -111,7 +103,7 @@ public class PostService {
         Pageable postPageable = PageRequest.of(0, 25, Sort.by("createdAt").descending());
         Pageable commentPageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
         
-        return postRepository.findPostsByOwnerUsernameIn(usersOfInterest, postPageable)
+        return postRepository.findFeedPosts(account.getId(), SecurityHelper.requesterId(), postPageable)
                 .stream()
                 .map(p -> {
                     PostDTO dto = new PostDTO();

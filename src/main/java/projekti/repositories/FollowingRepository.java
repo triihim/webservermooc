@@ -23,4 +23,8 @@ public interface FollowingRepository extends JpaRepository<Following, Long> {
     
     public Following findByFollowee_usernameAndFollower_username(String followee, String follower);
     
+    @Query("select count(f) > 0 from Following f where ((f.followee.id = :user1 or f.follower.id = :user2) or "
+         + "(f.followee.id = :user2 or f.follower.id = :user1)) "
+         + "and f.isFollowerBlocked = true")
+    public boolean isBlocked(@Param("user1") long user1, @Param("user2") long user2);
 }

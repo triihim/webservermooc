@@ -6,54 +6,75 @@
             <header th:replace="fragments/layout :: header"></header>
             
             <main>
-                
                 <div class="d-flex flex-column justify-content-center align-items-center">
                     <img id="profile-picture" />
                     <h1 class="p-2" th:text="${account.username}"></h1>
                     <p>
                         <span th:text="${account.firstName + ' ' + account.lastName}"></span>
                     </p>
-                    <p th:if="${!owner}">
+                    <p th:if="${!owner and !isBlocked}">
                         <a id="follow-button" class="btn btn-link text-decoration-none">
                             <span class="spinner-border" role="status"></span>
                         </a>
                     </p>
+                    <p th:if="${isBlocked}">
+                        Blocked
+                    </p>
                 </div>
                 
-                <ul class="nav nav-pills justify-content-center" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed" type="button" role="tab" aria-controls="feed" aria-selected="true">
-                            <span class="pe-1">Feed</span>
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="followers-tab" data-bs-toggle="tab" data-bs-target="#followers" type="button" role="tab" aria-controls="followers" aria-selected="false">
-                            <span class="pe-1">Followers</span>
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="following-tab" data-bs-toggle="tab" data-bs-target="#following" type="button" role="tab" aria-controls="following" aria-selected="false">
-                            <span class="pe-1">Following</span>
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="photos-tab" data-bs-toggle="tab" data-bs-target="#photos" type="button" role="tab" aria-controls="photos" aria-selected="false">
-                            <span class="pe-1">Photos</span>
-                        </button>
-                    </li>
-                </ul>
-                <div class="tab-content pt-3">
-                    <div class="tab-pane fade show active" id="feed" role="tabpanel" aria-labelledby="feed-tab">
-                        
-                        <div class="input-group mt-4" th:if="${owner}">
-                            <textarea class="form-control" id="feed-post-textarea" rows="2" placeholder="Got something to say?" maxlength="120"></textarea>
-                            <button id="feed-post-button" class="btn btn-success input-group-append">
-                                <i class="bi bi-chat-left-text-fill pe-1"></i>
-                                <span>Post</span>
+                <div th:if="${!isBlocked}">
+                    <ul class="nav nav-pills justify-content-center" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed" type="button" role="tab" aria-controls="feed" aria-selected="true">
+                                <span class="pe-1">Feed</span>
                             </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="followers-tab" data-bs-toggle="tab" data-bs-target="#followers" type="button" role="tab" aria-controls="followers" aria-selected="false">
+                                <span class="pe-1">Followers</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="following-tab" data-bs-toggle="tab" data-bs-target="#following" type="button" role="tab" aria-controls="following" aria-selected="false">
+                                <span class="pe-1">Following</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="photos-tab" data-bs-toggle="tab" data-bs-target="#photos" type="button" role="tab" aria-controls="photos" aria-selected="false">
+                                <span class="pe-1">Photos</span>
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content pt-3">
+                        <div class="tab-pane fade show active" id="feed" role="tabpanel" aria-labelledby="feed-tab">
+
+                            <div class="input-group mt-4" th:if="${owner}">
+                                <textarea class="form-control" id="feed-post-textarea" rows="2" placeholder="Got something to say?" maxlength="120"></textarea>
+                                <button id="feed-post-button" class="btn btn-success input-group-append">
+                                    <i class="bi bi-chat-left-text-fill pe-1"></i>
+                                    <span>Post</span>
+                                </button>
+                            </div>
+
+                            <div id="posts" class="pt-3">
+                                <!--/* Fetched dynamically */-->
+                                <div class="text-center">
+                                    <div class="spinner-border" role="status">
+                                      <span class="sr-only"></span>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
-                        
-                        <div id="posts" class="pt-3">
+                        <div class="tab-pane fade" id="followers" role="tabpanel" aria-labelledby="followers-tab">
+                             <!--/* Fetched dynamically */-->
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                  <span class="sr-only"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="following" role="tabpanel" aria-labelledby="following-tab">
                             <!--/* Fetched dynamically */-->
                             <div class="text-center">
                                 <div class="spinner-border" role="status">
@@ -61,26 +82,9 @@
                                 </div>
                             </div>
                         </div>
-                        
-                    </div>
-                    <div class="tab-pane fade" id="followers" role="tabpanel" aria-labelledby="followers-tab">
-                         <!--/* Fetched dynamically */-->
-                        <div class="text-center">
-                            <div class="spinner-border" role="status">
-                              <span class="sr-only"></span>
-                            </div>
+                        <div class="tab-pane fade" id="photos" role="tabpanel" aria-labelledby="photos-tab">
+                            Photos
                         </div>
-                    </div>
-                    <div class="tab-pane fade" id="following" role="tabpanel" aria-labelledby="following-tab">
-                        <!--/* Fetched dynamically */-->
-                        <div class="text-center">
-                            <div class="spinner-border" role="status">
-                              <span class="sr-only"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="photos" role="tabpanel" aria-labelledby="photos-tab">
-                        Photos
                     </div>
                 </div>
               
@@ -91,7 +95,7 @@
         <th:block th:include="fragments/layout :: scripts"></th:block>
         <script th:inline="javascript"> var account = /*[[${account.username}]]*/ '';</script>
         
-        <script>
+        <script th:if="${!isBlocked}">
             var followButton = document.querySelector("#follow-button");
             
             function updateFollowingStatus(status) {
@@ -344,7 +348,7 @@
             
         </script>
         
-        <script th:if="${!owner}">
+        <script th:if="${!owner and !isBlocked}">
             
             var followButton = document.querySelector("#follow-button");
             

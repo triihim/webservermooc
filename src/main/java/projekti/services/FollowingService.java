@@ -1,7 +1,8 @@
 package projekti.services;
 
-import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
@@ -64,6 +65,13 @@ public class FollowingService {
         
     }
     
+    public boolean isBlocked(String firstUser, String secondUser) {
+        if(firstUser.equalsIgnoreCase(secondUser)) return false;
+        List<Account> accounts = accountRepository.findByUsernameIn(Arrays.asList(firstUser, secondUser));
+        if(accounts.size() != 2) throw new RuntimeException("Could not find accounts by usernames: " + firstUser + ", " + secondUser);
+        return followingRepository.isBlocked(accounts.get(0).getId(), accounts.get(1).getId());
+    }
+    
     public FollowingDTO getFollowingStatus(String username) {
         Account followee = accountRepository.findByUsernameIgnoreCase(username);
         if(followee == null) throw new RuntimeException("No user found to toggle follow for: " + username);
@@ -94,9 +102,16 @@ public class FollowingService {
     }
     
     public List<FollowListItemDTO> getFollowersListing(String followee) {
-        Account a = accountRepository.findByUsernameIgnoreCase(followee);
+        Account account = accountRepository.findByUsernameIgnoreCase(followee);
+        
+        Set<String> blockers = accountRepository.findBlockersOf(account.getUsername())
+                .stream()
+                .map(a -> a.getUsername())
+                .collect(Collectors.toSet());
+        
         return followingRepository.findByFollowee_username(followee)
                 .stream()
+                .filter(f -> !blockers.contains(f.getFollower().getUsername()))
                 .map(f -> {
                     return new FollowListItemDTO(
                             f.getFollower().getId(),
@@ -110,16 +125,23 @@ public class FollowingService {
     }
     
     public List<FollowListItemDTO> getFolloweesListing(String username) {
-        Account a = accountRepository.findByUsernameIgnoreCase(username);
+        Account account = accountRepository.findByUsernameIgnoreCase(username);
+        
+        Set<String> blockers = accountRepository.findBlockedBothways(account.getUsername())
+                .stream()
+                .map(a -> a.getUsername())
+                .collect(Collectors.toSet());
+        
         return followingRepository.findByFollower_username(username)
                 .stream()
+                .filter(f -> !blockers.contains(f.getFollowee().getUsername()) && !blockers.contains(f.getFollower().getUsername()))
                 .map(f -> {
                     return new FollowListItemDTO(
                             f.getFollowee().getId(),
                             f.getFollowee().getUsername(),
                             f.getFollowee().getFirstName(),
                             f.getFollowee().getLastName(),
-                            null,
+                            f.getStartedAt(),
                             null);
                 })
                 .collect(Collectors.toList());

@@ -42,6 +42,7 @@ function sendRequest(request, onSuccess, onError) {
 }
 
 function formatServerDateTime(datetime) {
+    if(!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d*/.test(datetime)) return datetime; // Already formatted.
     var dateOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
     var timeOptions = { hour12: false };
     var date = new Date(datetime + "z");
