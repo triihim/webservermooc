@@ -1,3 +1,6 @@
+<p th:if="${feed.empty}" class="text-center p-5">
+    No posts to show yet
+</p>
 <div th:each="post : ${feed}" class="post d-flex flex-column my-4" th:attr="data-postid=${post.id}">
     <div class="d-flex align-items-end justify-content-between">
         <p class="post-sender m-0">
@@ -32,5 +35,4 @@
             <p th:text="${comment.content}"></p>
         </div>
     </div>
-    
 </div>

@@ -30,9 +30,6 @@ public class Account extends AbstractPersistable<Long> {
     @OneToOne
     private Photo profilePicture;
     
-    @OneToMany
-    private List<Following> followings;
-    
     public Long getProfilePictureId() {
         return profilePicture != null ? profilePicture.getId() : null;
     }

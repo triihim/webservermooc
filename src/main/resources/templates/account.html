@@ -191,6 +191,55 @@
             }
             
             
+            function toggleBlock(buttonRef, userId) {
+                buttonRef.disabled = true;
+                
+                function onSuccess(data) {
+                    buttonRef.disabled = false;
+                    var json = JSON.parse(data);
+                    var shieldIcon = buttonRef.querySelector("i");
+                    if(json.blocked === true) {
+                        buttonRef.classList.remove("btn-outline-secondary");
+                        buttonRef.classList.add("btn-outline-danger");
+                        shieldIcon.classList.remove("bi-shield");
+                        shieldIcon.classList.add("bi-shield-fill");
+                        buttonRef.querySelector("span").innerText = "Blocked";
+                    } else if(json.blocked === false) {
+                        buttonRef.classList.remove("btn-outline-danger");
+                        buttonRef.classList.add("btn-outline-secondary");
+                        shieldIcon.classList.remove("bi-shield-fill");
+                        shieldIcon.classList.add("bi-shield");
+                        buttonRef.querySelector("span").innerText = "Block";
+                    }
+                }
+                
+                function onError(error) {
+                    buttonRef.disabled = false;
+                    console.error(error);
+                }
+                
+                var url = context + "api/toggle-block/" + userId;
+                var request = new Request(url, "POST");
+                sendRequest(request, onSuccess, onError);
+            }
+           
+            // NOTICE: Do not call before followers are fetched.
+            function enhanceFollowersFunctionality() {
+                var followerWrappers = document.querySelectorAll("#followers [data-userid]");
+                followerWrappers.forEach(function(followerEl) {
+                    var timestamp = followerEl.querySelector(".timestamp");
+                    timestamp.innerText = formatServerDateTime(timestamp.innerText);
+                    var followerId = followerEl.dataset.userid;
+                    var blockButton = followerEl.querySelector(".block-follower-button");
+                    if(!blockButton) return;
+                    blockButton.addEventListener("click", function() {
+                        toggleBlock(blockButton, followerId);
+                    });
+                });
+            }
+            
+            
+            
             // FEED FETCHING
             
             var postsParent = document.querySelector("#posts");
@@ -216,10 +265,10 @@
             var followersTabButton = document.querySelector("#followers-tab");
             var followersTab = document.querySelector("#followers");
             
-            followersTabButton.addEventListener("click", function() {
-            
+            function fetchFollowers() {
                 function onSuccess(data) {
                     followersTab.innerHTML = data;
+                    enhanceFollowersFunctionality();
                 }
                 function onError(error) {
                     console.error(error);
@@ -227,8 +276,9 @@
                 var url = context + "api/followers/" + account + "/html";
                 var request = new Request(url, "GET");
                 sendRequest(request, onSuccess, onError);
+            }
             
-            });
+            followersTabButton.addEventListener("click", fetchFollowers);
             
             
             // FOLLOWEES FETCHING (on demand)
@@ -302,6 +352,7 @@
                 var status = JSON.parse(data);
                 updateFollowingStatus(status);
                 fetchFeed();
+                fetchFollowers();
             }
             
             function onError(error) {

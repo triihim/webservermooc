@@ -79,11 +79,15 @@ public class ApiTests {
     public void usersCanToggleFollowing() throws Exception {
         // tester follows jsmith.
         mockMvc.perform(post("/api/toggle-follow/jsmith").session(session)).andExpect(status().isOk());
-        Assert.assertTrue(followingRepository.isFollowing("jsmith", "tester"));
+        
+        Long follower = accountRepository.findByUsernameIgnoreCase("tester").getId();
+        Long followee = accountRepository.findByUsernameIgnoreCase("jsmith").getId();
+        
+        Assert.assertTrue(followingRepository.isFollowing(followee, follower));
         
         // tester unfollows jsmith.
         mockMvc.perform(post("/api/toggle-follow/jsmith").session(session)).andExpect(status().isOk());
-        Assert.assertFalse(followingRepository.isFollowing("jsmith", "tester"));
+        Assert.assertFalse(followingRepository.isFollowing(followee, follower));
     }
     
     @Test

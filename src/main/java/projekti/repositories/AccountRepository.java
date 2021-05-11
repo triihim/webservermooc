@@ -20,12 +20,14 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
            "or lower(a.lastName) like lower(concat('%', :partial, '%'))")
     public List<Account> findByPartialNameOrUsername(@Param("partial") String partial, Pageable pageable);
     
-    public List<Account> findAccountsByFollowings_follower_username(String username);
+    @Query("select a from Account a "
+            + "join Following f on f.follower.id = :id "
+            + "and f.followee.id = a.id")
+    public List<Account> findAccountsByFollowerId(@Param("id") long followerId);
     
-    @Query(value = "select a.* from account_followings af\n" +
-            "join following f on f.id = af.followings_id\n" +
-            "join account a on a.id = f.follower_id\n" +
-            "where af.account_id = (select id from account where username = :username)",
-            nativeQuery = true)
-    public List<Account> findFollowers(@Param("username") String username);
+    @Query("select a from Account a "
+            + "join Following f on f.followee.id = :id "
+            + "and f.follower.id = a.id")
+    public List<Account> findAccountsByFolloweeId(@Param("id") long followeeId);
+
 }

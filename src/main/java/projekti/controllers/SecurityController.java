@@ -21,7 +21,6 @@ public class SecurityController {
     @GetMapping("/login")
     public String loginPage() {
         if(SecurityHelper.isLoggedIn()) {
-            System.out.println("LOGGED IN: " + SecurityHelper.requesterUsername());
             return "redirect:/";
         }
         return "login";

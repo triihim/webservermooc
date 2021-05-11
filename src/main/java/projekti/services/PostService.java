@@ -3,6 +3,7 @@ package projekti.services;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import projekti.models.Post;
 import projekti.models.Account;
 import projekti.models.ResourceLike;
 import projekti.models.Comment;
+import projekti.models.Following;
 import projekti.repositories.AccountRepository;
 import projekti.repositories.CommentRepository;
 import projekti.repositories.FollowingRepository;
@@ -42,6 +44,9 @@ public class PostService {
     
     @Autowired
     private LikeRepository likeRepository;
+    
+    @Autowired
+    private FollowingRepository followingRepository;
     
     public Post createPost(PostDTO dto) {
         Account owner = accountRepository.findByUsernameIgnoreCase(SecurityHelper.requesterUsername());
@@ -81,11 +86,12 @@ public class PostService {
     }
     
     public List<PostDTO> getUserFeed(String username) {
+        Account account = accountRepository.findByUsernameIgnoreCase(username);
         
         // List of users whose posts appear on the feed.
-        List<String> usersOfInterest = accountRepository.findAccountsByFollowings_follower_username(username)
+        List<String> usersOfInterest = accountRepository.findAccountsByFollowerId(account.getId())
                 .stream()
-                .map(f -> f.getUsername())
+                .map(a -> a.getUsername())
                 .collect(Collectors.toList());
         
         usersOfInterest.add(username);
@@ -97,7 +103,7 @@ public class PostService {
                 .collect(Collectors.toList());
         
         // Used to set canComment-flag.
-        List<String> followedByRequester = accountRepository.findAccountsByFollowings_follower_username(SecurityHelper.requesterUsername())
+        List<String> followedByRequester = accountRepository.findAccountsByFollowerId(SecurityHelper.requesterId())
                 .stream()
                 .map(f -> f.getUsername())
                 .collect(Collectors.toList());

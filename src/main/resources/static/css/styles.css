@@ -45,7 +45,7 @@ main {
     vertical-align: bottom;
 }
 
-.post-timestamp, .comment-timestamp {
+.timestamp {
    font-size: .8rem;
    font-style: italic;
    vertical-align: bottom;

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FollowListItemDTO {
     
+    private long userId;
+    
     private String username;
     
     private String firstName;
@@ -17,5 +19,7 @@ public class FollowListItemDTO {
     private String lastName;
     
     private LocalDateTime startedAt;
+    
+    private Boolean isBlocked;
     
 }
