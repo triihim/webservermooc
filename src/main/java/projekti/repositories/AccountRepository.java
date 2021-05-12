@@ -43,4 +43,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     
     public List<Account> findByUsernameIn(Collection<String> usernames);
 
+    public Account findByProfilePicture_id(long id);
+    
 }

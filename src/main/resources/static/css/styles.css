@@ -2,6 +2,18 @@ body {
     background-color: #575963;
 }
 
+#notification-wrapper {
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    max-width: 750px;
+    width: 100%;
+}
+
+#notification-wrapper .alert {
+    margin: 10px;
+}
+
 #page-container {
     max-width: 750px;
     border-radius: 10px;
@@ -26,18 +38,12 @@ main {
     width: 200px;
     background-color: #ccc;
     border-radius: 100%;
+    object-fit: cover;
 }
 
 #logged-in-name {
     font-size: 1.2rem;
     line-height: 100%;
-}
-
-#logged-in-image {
-    background-color: #ccc;
-    border-radius: 100%;
-    width: 40px;
-    height: 40px;
 }
 
 .post-sender {
@@ -49,6 +55,10 @@ main {
    font-size: .8rem;
    font-style: italic;
    vertical-align: bottom;
+}
+
+.post-content, .post-comment {
+    word-break: break-all;
 }
 
 .post-comment {
@@ -77,6 +87,7 @@ a, a:visited {
     height: 100px;
     border-radius: 100%;
     background-color: #ccc;
+    object-fit: cover;
 }
 
 .page-numbering {

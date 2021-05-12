@@ -1,6 +1,6 @@
 package projekti.projections;
 
-public interface IIsLikedPost {
+public interface IIsLiked {
     
     boolean getIsLiked();
     

@@ -119,7 +119,8 @@ public class FollowingService {
                             f.getFollower().getFirstName(),
                             f.getFollower().getLastName(),
                             f.getStartedAt(),
-                            SecurityHelper.requesterUsername().equals(followee) ? f.isFollowerBlocked() : null); // Block-status shown only to the followee.
+                            SecurityHelper.requesterUsername().equals(followee) ? f.isFollowerBlocked() : null,  // Block-status shown only to the followee.
+                            f.getFollower().getProfilePictureId());
                 })
                 .collect(Collectors.toList());
     }
@@ -142,7 +143,8 @@ public class FollowingService {
                             f.getFollowee().getFirstName(),
                             f.getFollowee().getLastName(),
                             f.getStartedAt(),
-                            null);
+                            null,
+                            f.getFollowee().getProfilePictureId());
                 })
                 .collect(Collectors.toList());
     }

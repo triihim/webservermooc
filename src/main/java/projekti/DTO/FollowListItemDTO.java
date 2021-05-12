@@ -22,4 +22,6 @@ public class FollowListItemDTO {
     
     private Boolean isBlocked;
     
+    private Long profilePictureId;
+    
 }

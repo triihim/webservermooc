@@ -7,7 +7,7 @@
             
             <main>
                 <div class="d-flex flex-column justify-content-center align-items-center">
-                    <img id="profile-picture" />
+                    <img id="profile-picture" th:src="@{/photos/{id}(id=${account.profilePictureId})}" />
                     <h1 class="p-2" th:text="${account.username}"></h1>
                     <p>
                         <span th:text="${account.firstName + ' ' + account.lastName}"></span>
@@ -83,7 +83,12 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="photos" role="tabpanel" aria-labelledby="photos-tab">
-                            Photos
+                            <!--/* Fetched dynamically */-->
+                            <div class="text-center">
+                                <div class="spinner-border" role="status">
+                                  <span class="sr-only"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,6 +99,7 @@
         
         <th:block th:include="fragments/layout :: scripts"></th:block>
         <script th:inline="javascript"> var account = /*[[${account.username}]]*/ '';</script>
+        <script th:inline="javascript"> var isOwner = /*[[${owner}]]*/ '';</script>
         
         <script th:if="${!isBlocked}">
             var followButton = document.querySelector("#follow-button");
@@ -115,6 +121,7 @@
                 function onError(error) {
                     buttonRef.disabled = false;
                     console.error(error);
+                    showNotification("Error happened trying to like a post", "danger", JSON.stringify(error));
                 }
                 
                 var url = context + "api/posts/" + id + "/like";
@@ -153,6 +160,7 @@
                 function onError(error) {
                     submitButton.disabled = false;
                     console.error(error);
+                    showNotification("Error happened trying to comment a post", "danger", JSON.stringify(error));
                 }
                 
                 if(inputField.value.length > 0) {
@@ -195,6 +203,72 @@
             }
             
             
+            // NOTICE: do not call before fetching photo album.
+            function enhancePhotosFunctionality() {
+            
+                function deletePhoto(buttonRef, id) {
+                    function onSuccess(deletedId) {
+                        buttonRef.disabled = false;
+                        var deletedPhoto = document.querySelector("[data-photoid='" + deletedId + "']");
+                        deletedPhoto.parentNode.removeChild(deletedPhoto);
+                        showNotification("Photo deleted", "success");
+                    }
+                    
+                    function onError(error) {
+                        buttonRef.disabled = false;
+                        console.error(error);
+                        showNotification("Error happened trying to delete a photo", "danger", JSON.stringify(error));
+                    }
+                
+                    if(window.confirm("Delete photo?")) {
+                        buttonRef.disabled = true;
+                        var url = context + "api/photos/" + id;
+                        var request = new Request(url, "DELETE");
+                        sendRequest(request, onSuccess, onError);
+                    }
+                }
+                
+                function likePhoto(buttonRef, id) {
+                    buttonRef.disabled = true;
+                    
+                    function onSuccess(data) {
+                        var json = JSON.parse(data);
+                        buttonRef.querySelector(".like-badge").innerText = json.likes;
+                        buttonRef.removeChild(buttonRef.querySelector("i"));
+                        var thumbHtml = "<i class='bi bi-hand-thumbs-up-fill'></i>";
+                        buttonRef.innerHTML = thumbHtml + buttonRef.innerHTML;
+                    }
+                    
+                    function onError(error) {
+                        buttonRef.disabled = false;
+                        console.error(error);
+                        showNotification("Error happened trying to like a photo", "danger", JSON.stringify(error));
+                    }
+                    
+                    var url = context + "api/photos/" + id + "/like";
+                    var request = new Request(url, "POST");
+                    sendRequest(request, onSuccess, onError);
+                }
+            
+                var photoWrappers = document.querySelectorAll(".album-photo");
+                photoWrappers.forEach(function(pEl) {
+                    var photoId = pEl.dataset.photoid;
+                    
+                    var likeButton = pEl.querySelector(".like-button");
+                    likeButton.addEventListener("click", function() {
+                        likePhoto(likeButton, photoId);
+                    });
+                    
+                    if(isOwner) {
+                        var deleteButton = pEl.querySelector(".photo-delete-button");
+                        deleteButton.addEventListener("click", function() {
+                            deletePhoto(deleteButton, photoId);
+                        });
+                    }
+                });
+            }
+            
+            
             function toggleBlock(buttonRef, userId) {
                 buttonRef.disabled = true;
                 
@@ -220,6 +294,7 @@
                 function onError(error) {
                     buttonRef.disabled = false;
                     console.error(error);
+                    showNotification("Error happened trying to block a follower", "danger", JSON.stringify(error));
                 }
                 
                 var url = context + "api/toggle-block/" + userId;
@@ -255,6 +330,7 @@
                 }
                 function onError(error) {
                     console.error(error);
+                    showNotification("Error happened trying to fetch the feed", "danger", JSON.stringify(error));
                 }
                 var url = context + "api/feed/" + account + "/html";
                 var request = new Request(url, "GET");
@@ -262,6 +338,10 @@
             }
             
             fetchFeed();
+            
+            var feedButton = document.querySelector("#feed-tab");
+            feedButton.addEventListener("click", fetchFeed);
+            
             
             
             // FOLLOWERS FETCHING (on demand)
@@ -276,6 +356,7 @@
                 }
                 function onError(error) {
                     console.error(error);
+                    showNotification("Error happened trying to fetch the followers", "danger", JSON.stringify(error));
                 }
                 var url = context + "api/followers/" + account + "/html";
                 var request = new Request(url, "GET");
@@ -283,6 +364,7 @@
             }
             
             followersTabButton.addEventListener("click", fetchFollowers);
+            
             
             
             // FOLLOWEES FETCHING (on demand)
@@ -294,14 +376,39 @@
             
                 function onSuccess(data) {
                     followingTab.innerHTML = data;
+                    var timestampEls = document.querySelectorAll(".timestamp");
+                    timestampEls.forEach(function(tEl) {
+                        tEl.innerText = formatServerDateTime(tEl.innerText);
+                    });
                 }
                 function onError(error) {
                     console.error(error);
+                    showNotification("Error happened trying to fetch the followees", "danger", JSON.stringify(error));
                 }
                 var url = context + "api/followees/" + account + "/html";
                 var request = new Request(url, "GET");
                 sendRequest(request, onSuccess, onError);
             
+            });
+            
+            
+            // PHOTOS FETCHING (on demand)
+            
+            var photosButton = document.querySelector("#photos-tab");
+            var photosTab = document.querySelector("#photos");
+            
+            photosButton.addEventListener("click", function() {
+                function onSuccess(data) {
+                    photos.innerHTML = data;
+                    enhancePhotosFunctionality();
+                }
+                function onError(error) {
+                    console.error(error);
+                    showNotification("Error happened trying to fetch the photo album", "danger", JSON.stringify(error));
+                }
+                var url = context + "api/photos/" + account + "/html";
+                var request = new Request(url, "GET");
+                sendRequest(request, onSuccess, onError);
             });
             
             
@@ -319,6 +426,7 @@
                     feedPostButton.disabled = false;
                     feedPostTextarea.value = "";
                     fetchFeed();
+                    showNotification("Post created", "success");
                 }
             
                 function onError(error) {

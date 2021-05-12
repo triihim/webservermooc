@@ -24,7 +24,7 @@
                             </button>
                         </div>
                     </form>
-                    <button class="btn btn-outline-secondary ms-3" data-bs-toggle="modal" data-bs-target="#help-modal">
+                    <button class="btn btn-outline-secondary ms-3 d-none d-sm-block" data-bs-toggle="modal" data-bs-target="#help-modal">
                         <i class="bi bi-question-circle-fill"></i>
                     </button>
                     <div class="modal fade" id="help-modal" tabindex="-1">
@@ -87,6 +87,45 @@
                                         </div>
                                       </div>
                                     </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                                            Blocking a follower
+                                          </button>
+                                        </h2>
+                                        <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#help-accordion">
+                                          <div class="accordion-body">
+                                              <p>
+                                                  One can block followers from the followers tab. 
+                                              </p>
+                                              <p>
+                                                  Once blocked, the user will disappear from your feed and followings.
+                                                  Likewise, you will disappear from the feed and following listings of the blocked user.
+                                                  Additionally, you can not access each other's profiles while blocked by either one of you.
+                                              </p>
+                                              <p>
+                                                  Block can be lifted at any time.
+                                              </p>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                                            Photo album
+                                          </button>
+                                        </h2>
+                                        <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#help-accordion">
+                                          <div class="accordion-body">
+                                              <p>
+                                                  One can have up to 10 photos in their photo album. One of those photos can be selected as the profile picture.
+                                              </p>
+                                              <p>
+                                                  Other users can like photos in the album, but similar to the posts, once liked, forever liked.
+                                              </p>
+                                          </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -97,7 +136,6 @@
                     </div>
                     <div class="d-flex flex-row justify-content-end flex-grow-1">
                         <div class="align-self-center me-3 d-none d-sm-block">
-                            <img id="logged-in-image" class="me-1" />
                             <a id="logged-in-name" th:href="@{/account/{username}(username=${#authentication.getName()})}" th:text ="${#authentication.getName()}"></a>
                         </div>
                         <div class="dropdown">
@@ -107,6 +145,9 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <a class="text-decoration-none dropdown-item" th:href="@{/account/{username}(username=${#authentication.getName()})}">Profile</a>
+                                </li>
+                                <li>
+                                    <a class="text-decoration-none dropdown-item" data-bs-toggle="modal" data-bs-target="#help-modal">Help</a>
                                 </li>
                                 <hr class="m-2" />
                                 <li>
@@ -121,6 +162,11 @@
                     </div>
                 </div>
               </nav>
+            <div id="notification-wrapper">
+                <noscript>
+                    <div class="alert alert-danger" role="alert">JavaScript must be enabled for this site to function properly</div>
+                </noscript>
+            </div>
         </header>
         
         <th:block th:fragment="scripts">

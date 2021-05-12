@@ -16,6 +16,10 @@ function sendRequest(request, onSuccess, onError) {
     xhr.onreadystatechange = function() {
         if(xhr.readyState === 4) {
             if(xhr.status >= 200 && xhr.status < 400) {
+                if(xhr.responseURL.indexOf("/login") > -1) {
+                    // Request was redirected to login page = session has timed out -> refresh page.
+                    location.reload();
+                }
                 onSuccess(xhr.responseText);
             } else {
                 xhr.onerror();
@@ -47,4 +51,45 @@ function formatServerDateTime(datetime) {
     var timeOptions = { hour12: false };
     var date = new Date(datetime + "z");
     return date.toLocaleDateString("en-GB", dateOptions) + " " + date.toLocaleTimeString("en-GB", timeOptions);
+}
+
+function showNotification(message, type, details) {
+    if(["success", "danger", "warning"].indexOf(type.toLowerCase()) === -1) {
+        console.error("Invalid notification type: " + type);
+        return;
+    }
+    var wrapper = document.querySelector("#notification-wrapper");
+    var element = document.createElement("div");
+    element.classList.add("alert");
+    element.classList.add("alert-" + type.toLowerCase());
+    
+    var html = message.toString();
+
+    if(details) {
+        html += "<button class='btn btn-dark m-2 details-button'>Details</button>";
+    }
+
+    element.innerHTML = html;
+    
+    var notification = wrapper.appendChild(element);
+    var detailsButton = notification.querySelector(".details-button");
+    
+    if(detailsButton) {
+        detailsButton.addEventListener("click", function() {
+            var detailsTemp = document.createElement("textarea");
+            document.body.appendChild(detailsTemp);
+            detailsTemp.value = details;
+            detailsTemp.select();
+            detailsTemp.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            document.body.removeChild(detailsTemp);
+            alert("The following is also copied to your clipboard:\n" + details);
+        });
+    }
+
+    var duration = type.toLowerCase() === "danger" ? 10000 : 5000;
+
+    setTimeout(function() {
+        wrapper.removeChild(notification);
+    }, duration);
 }

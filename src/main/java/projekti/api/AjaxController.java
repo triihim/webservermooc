@@ -5,8 +5,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,12 +23,15 @@ import projekti.DTO.CommentDTO;
 import projekti.DTO.FollowBlockDTO;
 import projekti.DTO.FollowListItemDTO;
 import projekti.DTO.FollowingDTO;
+import projekti.DTO.PhotoDTO;
+import projekti.DTO.PhotoLikeResponseDTO;
 import projekti.DTO.PostDTO;
 import projekti.DTO.PostLikeResponseDTO;
 import projekti.helpers.SecurityHelper;
 import projekti.models.Post;
 import projekti.services.CommentService;
 import projekti.services.FollowingService;
+import projekti.services.PhotoService;
 import projekti.services.PostService;
 
 @RestController
@@ -41,6 +46,9 @@ public class AjaxController {
     
     @Autowired
     private CommentService commentService;
+    
+    @Autowired
+    private PhotoService photoService;
     
     @Autowired
     private TemplateEngine templateEngine;
@@ -131,5 +139,30 @@ public class AjaxController {
         WebContext ctx = new WebContext(request, response, request.getServletContext());
         ctx.setVariable("users", followees);
         return templateEngine.process("followlist", ctx);
+    }
+    
+     @RequestMapping(
+        value = "/photos/{username}/html", 
+        method = RequestMethod.GET, 
+        produces = "text/html"
+    )
+    @ResponseBody
+    public String getPhotos(@PathVariable String username, HttpServletRequest request, HttpServletResponse response) {
+        List<PhotoDTO> photos = photoService.getUserPhotos(username);
+        WebContext ctx = new WebContext(request, response, request.getServletContext());
+        ctx.setVariable("owner", SecurityHelper.accessorIsLoggedInUser(username));
+        ctx.setVariable("photos", photos);
+        ctx.setVariable("maxPhotosReached", photoService.isMaxPhotosReached(username));
+        return templateEngine.process("photos", ctx);
+    }
+    
+    @DeleteMapping("/photos/{id}")
+    public Long deletePhoto(@PathVariable Long id) {
+        return photoService.deletePhoto(id);
+    }
+    
+    @PostMapping("/photos/{id}/like")
+    public PhotoLikeResponseDTO likePhoto(@PathVariable("id") Long photoId) {
+        return photoService.likePhoto(photoId);
     }
 }

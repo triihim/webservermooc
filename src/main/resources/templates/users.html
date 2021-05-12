@@ -13,7 +13,7 @@
                         &#128533;
                     </p>
                     <div th:each="user : ${users}" class="d-flex flex-row my-4 align-items-center">
-                        <img class="user-listing-image" />
+                        <img class="user-listing-image" th:src="@{/photos/{id}(id=${user.profilePictureId})}" />
                         <div class="ps-4">
                             <h4>
                                 <a th:href="@{/account/{username}(username=${user.username})}" th:text="${user.username}"></a>

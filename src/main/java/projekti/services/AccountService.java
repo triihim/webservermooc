@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 import projekti.DTO.AccountDTO;
 import projekti.DTO.RegistrationDTO;
 import projekti.DTO.UserSearchDTO;
+import projekti.helpers.SecurityHelper;
 import projekti.repositories.AccountRepository;
 import projekti.models.Account;
+import projekti.models.Photo;
+import projekti.repositories.PhotoRepository;
 
 @Service
 public class AccountService {
@@ -23,6 +26,9 @@ public class AccountService {
     
     @Autowired
     private AccountRepository accountRepository;
+    
+    @Autowired
+    private PhotoRepository photoRepository;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -76,6 +82,24 @@ public class AccountService {
         if(page > totalPages) throw new RuntimeException("Page cannot exceed total pages");
         
         return new UserSearchDTO(accounts, partial, page, totalPages);
+    }
+    
+    public void setProfilePicture(long photoId) {
+        Account account = accountRepository.getOne(SecurityHelper.requesterId());
+        Photo photo = photoRepository.findWithOwnerById(photoId);
+        
+        logger.info(SecurityHelper.requesterUsername() + " attempts to set profile picture to photo: " + photo.getId());
+        
+        if(photo == null) {
+            throw new RuntimeException("No photo found with id " + photoId);
+        }
+        
+        if(!photo.getOwner().getId().equals(account.getId())) {
+            throw new RuntimeException("Photo " + photoId + " is not owned by " + account.getUsername());
+        }
+        
+        account.setProfilePicture(photo);
+        accountRepository.save(account);
     }
     
     private String capitalize(String str) {

@@ -1,0 +1,51 @@
+<div class="d-flex flex-column pt-3">
+    <div th:if="${owner}" class="my-4 card">
+        <div class="card-header">
+            <span th:if="${!maxPhotosReached}">
+                Upload new
+            </span>
+            <span th:if="${maxPhotosReached}">
+                You've reached the photo limit and can not upload more before removing an existing one &#128533;
+            </span>
+        </div>
+        <div th:if="${!maxPhotosReached}" class="card-body">
+            <form th:action="@{/photos}" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <input class="form-control" type="file" name="file" required accept="image/*">
+                    <span>Supported file types are: <span class="fst-italic">.jpeg .png</span> and maximum file size: 300 kb</span>
+                    <input class="form-control mt-4" type="text" name="description" maxlength="60" placeholder="Description">
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-outline-success" type="submit">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <p th:if="${photos.empty}" class="text-center p-5">
+        No photos yet &#128533;
+    </p>
+    <div th:each="photo : ${photos}" class="d-flex flex-column mb-5 album-photo" th:attr="data-photoid=${photo.id}">
+        <div class="card">
+            <img th:src="@{/photos/{id}(id=${photo.id})}" class="card-img-top" th:alt="${photo.description}">
+            <div class="card-body info">
+                <p class="card-text" th:text="${photo.description}"></p>
+                <div class="d-flex">
+                    <button class="like-button btn btn-outline-primary" th:disabled="${!photo.canLike}">
+                        <i class="bi bi-hand-thumbs-up"></i>
+                        <span class="like-badge badge rounded-pill bg-light text-dark" th:text="${photo.likes}">0</span>
+                    </button>
+                    <div class="d-flex flex-grow-1 justify-content-end">
+                        <form th:if="${!photo.isProfilePicture()}" class="me-2 ms-2" th:action="@{/account/profile-picture}" method="post">
+                            <button th:if="${owner}" class="btn btn-outline-secondary" type="submit" name="photoId" th:value="${photo.id}">
+                                Set profile picture
+                            </button>
+                        </form>
+                        <button th:if="${owner}" class="btn btn-outline-danger photo-delete-button">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

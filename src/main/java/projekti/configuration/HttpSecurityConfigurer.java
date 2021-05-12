@@ -13,6 +13,7 @@ public class HttpSecurityConfigurer {
             .antMatchers("/login*").permitAll()
             .antMatchers("/register").permitAll()
             .antMatchers("/account").hasAnyAuthority("USER")
+            .antMatchers("/photos").hasAnyAuthority("USER")
             .antMatchers("/api").hasAnyAuthority("USER")
             .anyRequest().authenticated()
             .and()
