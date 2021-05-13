@@ -37,6 +37,7 @@ public class PhotoService {
     @Value("${projekti.photo.max-count}")
     private long maxPhotoCount;
     
+    @Transactional
     public void savePhoto(MultipartFile file, String description) throws IOException {
         Account uploader = accountRepository.getOne(SecurityHelper.requesterId());
         
