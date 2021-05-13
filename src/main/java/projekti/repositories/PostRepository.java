@@ -23,8 +23,8 @@ public interface PostRepository extends JpaRepository<Post, Long>  {
                 + "join Following f on (f.followee.id = u.id and f.follower.id = :feedOwner) or u.id = :feedOwner) "
             + "or p.owner.id = :feedOwner) "
             + "and (0 = (select count(b) from Following b where "
-                    + "((b.followee.id = :requester or b.follower.id = :requester) "
-                    + "and (b.followee.id = p.owner.id or b.follower.id = p.owner.id) "
+                    + "((b.followee.id = :requester and b.follower.id = :requester) "
+                    + "or (b.followee.id = p.owner.id and b.follower.id = p.owner.id) "
                     + "and b.isFollowerBlocked = true) ) "
             + "or (:requester = :feedOwner and p.owner.id = :requester))")
     public List<Post> findFeedPosts(@Param("feedOwner") long feedOwnerId,

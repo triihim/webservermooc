@@ -29,7 +29,7 @@
     <div class="post-comments">
         <div class="post-comment" th:each="comment : ${post.comments}">
             <div class="d-flex align-items-end justify-content-between">
-                <p class="m-0"><a href="#" th:text="${comment.author}"></a></p>
+                <p class="m-0"><a th:href="@{/account/{author}(author=${comment.author})}" th:text="${comment.author}"></a></p>
                 <p class="timestamp comment-timestamp m-0 text-muted" th:text="${comment.createdAt}"></p>
             </div>
             <p th:text="${comment.content}"></p>
