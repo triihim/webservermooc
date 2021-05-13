@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 public class HttpSecurityConfigurer {
     
     public void configure(HttpSecurity http) throws Exception {
-        http.requestCache().disable();
         http.authorizeRequests()
             .antMatchers("/static/**", "/css/**", "/js/**").permitAll() // Some claim these are permitted by default. Did not work.
             .antMatchers("/login*").permitAll()

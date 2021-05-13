@@ -1,8 +1,12 @@
 package projekti.controllers;
 
 import java.io.IOException;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +25,9 @@ public class PhotoController {
     private long maxPhotoSize;
     
     @Autowired
+    ResourceLoader resourceLoader;
+    
+    @Autowired
     private PhotoService photoService;
     
     @GetMapping(value = "/photos/{id}", produces = {"image/png", "image/jpeg"})
@@ -28,8 +35,14 @@ public class PhotoController {
     public byte[] getPhoto(@PathVariable Long id) {
         return photoService.getPhotoContent(id);
     }
-
     
+    @GetMapping(value = "/photos", produces = "image/png")
+    @ResponseBody
+    public byte[] handleNoPhotoIdSpecified() throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:/static/images/no-image.png");
+        return IOUtils.toByteArray(resource.getInputStream());
+    }
+
     @PostMapping("/photos")
     public String photoUpload(@RequestParam MultipartFile file, @RequestParam String description) {
         

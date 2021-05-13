@@ -93,3 +93,4 @@ function showNotification(message, type, details) {
         wrapper.removeChild(notification);
     }, duration);
 }
+

@@ -36,9 +36,9 @@ main {
 #profile-picture {
     height: 200px;
     width: 200px;
-    background-color: #ccc;
     border-radius: 100%;
     object-fit: cover;
+    
 }
 
 #logged-in-name {
@@ -86,7 +86,6 @@ a, a:visited {
     width: 100px;
     height: 100px;
     border-radius: 100%;
-    background-color: #ccc;
     object-fit: cover;
 }
 
