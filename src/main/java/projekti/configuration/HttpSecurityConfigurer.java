@@ -13,11 +13,13 @@ public class HttpSecurityConfigurer {
             .antMatchers("/register").permitAll()
             .antMatchers("/account").hasAnyAuthority("USER")
             .antMatchers("/photos").hasAnyAuthority("USER")
-            .antMatchers("/api").hasAnyAuthority("USER")
+            .antMatchers("/api*").hasAnyAuthority("USER")
             .anyRequest().authenticated()
             .and()
             .formLogin().loginPage("/login").permitAll().defaultSuccessUrl("/account", true)
             .and()
             .logout().deleteCookies("JSESSIONID");
+        
+        http.csrf().ignoringAntMatchers("/api*");
     }
 }
