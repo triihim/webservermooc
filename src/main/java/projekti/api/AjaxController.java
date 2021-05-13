@@ -36,7 +36,6 @@ import projekti.services.PhotoService;
 import projekti.services.PostService;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api")
 public class AjaxController {
     
