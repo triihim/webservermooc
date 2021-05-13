@@ -4,6 +4,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,6 +54,9 @@ public class AjaxController {
     
     @Autowired
     private TemplateEngine templateEngine;
+    
+    @Value("${spring.profiles.active}")
+    private String activeProfile;   
     
     @RequestMapping(value = "/posts", method = {RequestMethod.POST})
     public Post createPost(@RequestBody PostDTO dto) {
@@ -153,6 +157,7 @@ public class AjaxController {
         WebContext ctx = new WebContext(request, response, request.getServletContext());
         ctx.setVariable("owner", SecurityHelper.accessorIsLoggedInUser(username));
         ctx.setVariable("photos", photos);
+        ctx.setVariable("includeCsrf", activeProfile.equals("production"));
         ctx.setVariable("maxPhotosReached", photoService.isMaxPhotosReached(username));
         return templateEngine.process("photos", ctx);
     }

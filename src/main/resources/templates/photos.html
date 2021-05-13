@@ -10,10 +10,7 @@
         </div>
         <div th:if="${!maxPhotosReached}" class="card-body">
             <form th:action="@{/photos}" method="post" enctype="multipart/form-data">
-                <input
-                        type="hidden"
-                        th:name="${_csrf.parameterName}"
-                        th:value="${_csrf.token}" />
+                <input th:if="${includeCsrf}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <div class="mb-3">
                     <input class="form-control" type="file" name="file" required accept="image/*">
                     <span>Supported file types are: <span class="fst-italic">.jpeg .png</span> and maximum file size: 300 kb</span>

@@ -2,8 +2,10 @@ package projekti.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,7 @@ public class Account extends AbstractPersistable<Long> {
     private String password;
     
     @OneToOne
+    @Basic(fetch = FetchType.EAGER)
     private Photo profilePicture;
     
     public Long getProfilePictureId() {

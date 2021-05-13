@@ -1,9 +1,6 @@
 package projekti.services;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
@@ -13,17 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import projekti.DTO.CommentDTO;
 import projekti.DTO.PostDTO;
 import projekti.helpers.SecurityHelper;
 import projekti.helpers.TimestampHelper;
 import projekti.models.Post;
 import projekti.models.Account;
 import projekti.models.ResourceLike;
-import projekti.models.Comment;
-import projekti.models.Following;
 import projekti.repositories.AccountRepository;
-import projekti.repositories.CommentRepository;
 import projekti.repositories.FollowingRepository;
 import projekti.repositories.LikeRepository;
 import projekti.repositories.PostRepository;
