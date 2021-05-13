@@ -2,6 +2,7 @@ package projekti.configuration;
 
 import org.springframework.stereotype.Component;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 @Component
 public class HttpSecurityConfigurer {
@@ -21,5 +22,8 @@ public class HttpSecurityConfigurer {
             .logout().logoutSuccessUrl("/");
         
         http.csrf().ignoringAntMatchers("/api/**", "/account/profile-picture");
+        
+        // Fixes randomly occurring session errors.
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
     }
 }
