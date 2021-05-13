@@ -57,10 +57,12 @@ public class PhotoService {
         return photoRepository.countByOwner_usernameIgnoreCase(username) >= maxPhotoCount;
     }
     
+    @Transactional
     public byte[] getPhotoContent(long photoId) {
         return photoRepository.findWithContentById(photoId).getContent();
     }
     
+    @Transactional
     public List<PhotoDTO> getUserPhotos(String username) {
         List<Long> likedPhotos = likeRepository.findPhotosLikedByUserId(SecurityHelper.requesterId())
                 .stream()
