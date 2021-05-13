@@ -36,9 +36,9 @@ public class AccountService {
     public void register(RegistrationDTO dto) {
         logger.info("Registering user: " + dto.getUsername());
         Account account = new Account();
-        account.setFirstName(capitalize(dto.getFirstName()));
-        account.setLastName(capitalize(dto.getLastName()));
-        account.setUsername(dto.getUsername());
+        account.setFirstName(capitalize(dto.getFirstName().trim()));
+        account.setLastName(capitalize(dto.getLastName().trim()));
+        account.setUsername(dto.getUsername().trim());
         account.setPassword(passwordEncoder.encode(dto.getPassword()));
         accountRepository.save(account);
         logger.info("Registered user: " + dto.getUsername());

@@ -1,5 +1,6 @@
 package projekti.DTO;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -11,22 +12,27 @@ import lombok.NoArgsConstructor;
 @Data
 public class RegistrationDTO {
     
+    @NotBlank
     @NotEmpty
     @Size(min = 2, max = 50)
     private String firstName;
     
+    @NotBlank
     @NotEmpty
     @Size(min = 2, max = 50)
     private String lastName;
     
+    @NotBlank
     @NotEmpty
     @Size(min = 3, max = 20)
     private String username;
     
+    @NotBlank
     @NotEmpty
     @Size(min = 8, max = 50)
     private String password;
 
+    @NotBlank
     @NotEmpty
     @Size(min = 8, max = 50)
     private String passwordConfirm;
