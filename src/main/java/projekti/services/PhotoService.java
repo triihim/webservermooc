@@ -96,10 +96,10 @@ public class PhotoService {
             throw new RuntimeException("Can only delete own photos");
         }
         
-        Account photoUser = accountRepository.findByProfilePicture_id(photoId);
+        Account photoUser = accountRepository.findByProfilePictureId(photoId);
         
         if(photoUser != null) {
-            photoUser.setProfilePicture(null);
+            photoUser.setProfilePictureId(null);
         } 
        
         photoRepository.delete(photo);

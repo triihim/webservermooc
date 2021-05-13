@@ -29,6 +29,9 @@ public class Account extends AbstractPersistable<Long> {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // For situations where entity is returned as is.
     private String password;
     
+    private Long profilePictureId;
+    
+    /*
     @OneToOne
     @Basic(fetch = FetchType.EAGER)
     private Photo profilePicture;
@@ -36,4 +39,5 @@ public class Account extends AbstractPersistable<Long> {
     public Long getProfilePictureId() {
         return profilePicture != null ? profilePicture.getId() : null;
     }
+    */
 }

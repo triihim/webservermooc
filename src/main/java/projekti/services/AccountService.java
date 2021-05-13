@@ -100,7 +100,7 @@ public class AccountService {
             throw new RuntimeException("Photo " + photoId + " is not owned by " + account.getUsername());
         }
         
-        account.setProfilePicture(photo);
+        account.setProfilePictureId(photo.getId());
         accountRepository.save(account);
     }
     
