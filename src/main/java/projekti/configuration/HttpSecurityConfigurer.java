@@ -20,6 +20,6 @@ public class HttpSecurityConfigurer {
             .and()
             .logout().logoutSuccessUrl("/");
         
-        http.csrf().ignoringAntMatchers("/api/**");
+        http.csrf().ignoringAntMatchers("/api/**", "/account/profile-picture");
     }
 }
