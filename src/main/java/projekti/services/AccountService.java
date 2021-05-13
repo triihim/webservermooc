@@ -2,6 +2,7 @@ package projekti.services;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ public class AccountService {
         return new UserSearchDTO(accounts, partial, page, totalPages);
     }
     
+    @Transactional
     public void setProfilePicture(long photoId) {
         Account account = accountRepository.getOne(SecurityHelper.requesterId());
         Photo photo = photoRepository.findWithOwnerById(photoId);
