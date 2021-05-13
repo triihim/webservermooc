@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.springframework.org/security/tags">
+    <head th:fragment="head(title)" lang="en">
+        <title th:text="${title}">Title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" 
+              rel="stylesheet" 
+              integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" 
+              crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
+        <link th:href="@{/css/styles.css}" rel="stylesheet">
+    </head>
+    <body>
+        
+        <header th:fragment="header">
+            <nav class="navbar navbar-light bg-light">
+                <div class="container-fluid justify-content-start">
+                    <form th:action="@{/account-search}" method="get">
+                        <div class="input-group">
+                            <input class="form-control" placeholder="Search users" aria-label="Search users" name="query" maxlength="50" />
+                            <button class="btn btn-outline-secondary input-group-append" type="submit">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <button class="btn btn-outline-secondary ms-3 d-none d-sm-block" data-bs-toggle="modal" data-bs-target="#help-modal">
+                        <i class="bi bi-question-circle-fill"></i>
+                    </button>
+                    <div class="modal fade" id="help-modal" tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Help</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="accordion" id="help-accordion">
+                                    <div class="accordion-item">
+                                      <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                          User search feature
+                                        </button>
+                                      </h2>
+                                      <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#help-accordion">
+                                        <div class="accordion-body">
+                                            <p>
+                                                The user search feature, located in the site-wide header, allows the user to search for other users by partial last-, first- or username.
+                                            </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                      <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                          Feed
+                                        </button>
+                                      </h2>
+                                      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#help-accordion">
+                                        <div class="accordion-body">
+                                            <p>
+                                                The feed, found on every user's page, shows 25 latest posts by the feed's owner or his/hers followees in descending order. 
+                                            </p>
+                                            <p>
+                                                Followers can comment on posts on the feed. Comments are maximum of 60 characters in length and only 10 latest comments are shown.
+                                            </p>
+                                            <p>
+                                                Followers can like posts on the feed, but once liked, forever liked &#128077;
+                                            </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                      <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                          Creating a post
+                                        </button>
+                                      </h2>
+                                      <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#help-accordion">
+                                        <div class="accordion-body">
+                                            <p>
+                                                One can post on his/hers own feed. The post is then shown on the user's own feed as well as on the feed of his/hers followers.
+                                            </p>
+                                            <p>
+                                                Post length is limited from 1 to 120 characters.
+                                            </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                                            Blocking a follower
+                                          </button>
+                                        </h2>
+                                        <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#help-accordion">
+                                          <div class="accordion-body">
+                                              <p>
+                                                  One can block followers from the followers tab. 
+                                              </p>
+                                              <p>
+                                                  Once blocked, the user will disappear from your feed and followings.
+                                                  Likewise, you will disappear from the feed and following listings of the blocked user.
+                                                  Additionally, you can not access each other's profiles while blocked by either one of you.
+                                              </p>
+                                              <p>
+                                                  Block can be lifted at any time.
+                                              </p>
+                                          </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                                            Photo album
+                                          </button>
+                                        </h2>
+                                        <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#help-accordion">
+                                          <div class="accordion-body">
+                                              <p>
+                                                  One can have up to 10 photos in their photo album. One of those photos can be selected as the profile picture.
+                                              </p>
+                                              <p>
+                                                  Other users can like photos in the album, but similar to the posts, once liked, forever liked.
+                                              </p>
+                                          </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row justify-content-end flex-grow-1">
+                        <div class="align-self-center me-3 d-none d-sm-block">
+                            <a id="logged-in-name" th:href="@{/account/{username}(username=${#authentication.getName()})}" th:text ="${#authentication.getName()}"></a>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="bi bi-gear-fill"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="text-decoration-none dropdown-item" th:href="@{/account/{username}(username=${#authentication.getName()})}">Profile</a>
+                                </li>
+                                <li>
+                                    <a class="text-decoration-none dropdown-item" data-bs-toggle="modal" data-bs-target="#help-modal">Help</a>
+                                </li>
+                                <hr class="m-2" />
+                                <li>
+                                    <form th:action="@{/logout}" method="post">
+                                        <button type="submit" id="logout-button" class="btn btn-link text-decoration-none dropdown-item">
+                                            <span class="text-danger">Logout</span>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+              </nav>
+            <div id="notification-wrapper">
+                <noscript>
+                    <div class="alert alert-danger" role="alert">JavaScript must be enabled for this site to function properly</div>
+                </noscript>
+            </div>
+        </header>
+        
+        <th:block th:fragment="scripts">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+            <script th:inline="javascript"> var context = /*[[@{/}]]*/ '';</script>
+            <script th:src="@{/js/main.js}"></script>
+        </th:block>
+        
+    </body>
+</html>

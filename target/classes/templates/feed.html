@@ -1,0 +1,38 @@
+<p th:if="${feed.empty}" class="text-center p-5">
+    <span>No posts to show</span>
+</p>
+<div th:each="post : ${feed}" class="post d-flex flex-column my-4" th:attr="data-postid=${post.id}">
+    <div class="d-flex align-items-end justify-content-between">
+        <p class="post-sender m-0">
+            <a th:href="@{/account/{username}(username=${post.owner})}" th:text="${post.owner}"></a>
+        </p>
+        <p class="timestamp post-timestamp m-0 text-muted" th:text="${post.createdAt}"></p>
+    </div>
+    <div class="post-content mt-1">
+        <p th:text="${post.content}"></p>
+    </div>
+
+    <div class="post-controls mb-3 d-flex">
+        <button class="like-button btn btn-outline-primary me-2" th:disabled="${!post.canLike}">
+            <i th:if="${!post.canLike}" class="bi bi-hand-thumbs-up-fill"></i>
+            <i th:if="${post.canLike}" class="bi bi-hand-thumbs-up"></i>
+            <span class="like-badge badge rounded-pill bg-light text-dark" th:text="${post.likes}">-</span>
+        </button>
+        <div class="input-group">
+            <input th:disabled="${!post.canComment}" class="comment-field form-control" th:placeholder="${post.canComment ? 'Comment' : 'Only followers of the author can comment'}" maxlength="60" />
+            <button th:disabled="${!post.canComment}" class="comment-button btn btn-outline-success input-group-append">
+                <i class="bi bi-chat-dots-fill"></i>
+            </button>
+        </div>
+    </div>
+   
+    <div class="post-comments">
+        <div class="post-comment" th:each="comment : ${post.comments}">
+            <div class="d-flex align-items-end justify-content-between">
+                <p class="m-0"><a href="#" th:text="${comment.author}"></a></p>
+                <p class="timestamp comment-timestamp m-0 text-muted" th:text="${comment.createdAt}"></p>
+            </div>
+            <p th:text="${comment.content}"></p>
+        </div>
+    </div>
+</div>
