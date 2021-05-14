@@ -234,7 +234,7 @@ function toggleBlock(buttonRef, userId) {
         showNotification("Error happened trying to block a follower", "danger", JSON.stringify(error));
     }
 
-    var url = context + "api/toggle-block/" + userId;
+    var url = context + "api/following/toggle-block/" + userId;
     var request = new Request(url, "POST");
     sendRequest(request, onSuccess, onError);
 }
@@ -269,7 +269,7 @@ function fetchFeed() {
         console.error(error);
         showNotification("Error happened trying to fetch the feed", "danger", JSON.stringify(error));
     }
-    var url = context + "api/feed/" + account + "/html";
+    var url = context + "api/html/feed/" + account;
     var request = new Request(url, "GET");
     sendRequest(request, onSuccess, onError);
 }
@@ -295,7 +295,7 @@ function fetchFollowers() {
         console.error(error);
         showNotification("Error happened trying to fetch the followers", "danger", JSON.stringify(error));
     }
-    var url = context + "api/followers/" + account + "/html";
+    var url = context + "api/html/followers/" + account;
     var request = new Request(url, "GET");
     sendRequest(request, onSuccess, onError);
 }
@@ -322,7 +322,7 @@ followingTabButton.addEventListener("click", function() {
         console.error(error);
         showNotification("Error happened trying to fetch the followees", "danger", JSON.stringify(error));
     }
-    var url = context + "api/followees/" + account + "/html";
+    var url = context + "api/html/followees/" + account;
     var request = new Request(url, "GET");
     sendRequest(request, onSuccess, onError);
 
@@ -343,7 +343,7 @@ photosButton.addEventListener("click", function() {
         console.error(error);
         showNotification("Error happened trying to fetch the photo album", "danger", JSON.stringify(error));
     }
-    var url = context + "api/photos/" + account + "/html";
+    var url = context + "api/html/photos/" + account;
     var request = new Request(url, "GET");
     sendRequest(request, onSuccess, onError);
 });

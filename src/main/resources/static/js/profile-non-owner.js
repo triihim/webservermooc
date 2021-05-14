@@ -12,13 +12,13 @@ function onError(error) {
 }
 
 function fetchStatus() {
-    var url = context + "api/follow-status/" + account;
+    var url = context + "api/following/status/" + account;
     var request = new Request(url, "GET");
     sendRequest(request, onSuccess, onError);
 }
 
 function toggleFollowingStatus() {
-    var url = context + "api/toggle-follow/" + account;
+    var url = context + "api/following/toggle-follow/" + account;
     var request = new Request(url, "POST", "application/json", {});
     sendRequest(request, onSuccess, onError);
 }

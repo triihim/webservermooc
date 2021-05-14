@@ -86,9 +86,6 @@ public class PostService {
         
         // Used to set canLike-flag.
         List<Long> likedByRequester = likeRepository.findIdsOfLikedPostsByUserId(SecurityHelper.requesterId());
-                //.stream()
-                //.map(item -> item.getPostId())
-               // .collect(Collectors.toList());
         
         // Used to set canComment-flag.
         List<String> followedByRequester = accountRepository.findAccountsByFollowerId(SecurityHelper.requesterId())
