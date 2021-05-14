@@ -5,17 +5,17 @@
     <div th:each="user : ${users}" th:attr="data-userid=${user.userId}">
         <div class="card mb-2">
             <div class="card-body">
-                <div class="d-flex flex-row align-items-center">
+                <div class="d-flex flex-sm-row flex-column align-items-sm-center">
                     <img class="user-listing-image d-none d-sm-block" th:src="@{/photos/{id}(id=${user.profilePictureId})}">
-                    <div class="ps-sm-4 d-flex flex-column justify-content-center ms-2">
+                    <div class="ps-sm-4 d-flex flex-column justify-content-center ms-sm-2">
                         <h4>
                             <a th:href="@{/account/{username}(username=${user.username})}" th:text="${user.username}"></a>
                         </h4>
                         <p th:text="${user.firstName + ' ' + user.lastName}"></p>
                     </div>
-                    <div class="d-flex flex-column align-items-end flex-grow-1 align-self-start">
+                    <div class="d-flex flex-column align-items-sm-end flex-grow-1 align-self-start">
                         <span th:if="${user.startedAt != null}" class="fst-italic text-muted">Since</span>
-                        <span th:if="${user.startedAt != null}" class="timestamp py-1 text-end" th:text="${user.startedAt}"></span>
+                        <span th:if="${user.startedAt != null}" class="timestamp py-1 " th:text="${user.startedAt}"></span>
                         <button th:if="${user.isBlocked != null and !user.isBlocked}" class="block-follower-button btn btn-outline-secondary mt-2">
                             <i class="bi bi-shield"></i>
                             <span>Block</span>

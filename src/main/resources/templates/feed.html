@@ -2,11 +2,11 @@
     <span>No posts to show</span>
 </p>
 <div th:each="post : ${feed}" class="post d-flex flex-column my-4" th:attr="data-postid=${post.id}">
-    <div class="d-flex align-items-end justify-content-between">
+    <div class="d-flex align-items-sm-end justify-content-between flex-sm-row flex-column">
         <p class="post-sender m-0">
             <a th:href="@{/account/{username}(username=${post.owner})}" th:text="${post.owner}"></a>
         </p>
-        <p class="timestamp post-timestamp m-0 text-muted" th:text="${post.createdAt}"></p>
+        <p class="timestamp post-timestamp m-0 text-muted align-self-sm-center" th:text="${post.createdAt}"></p>
     </div>
     <div class="post-content mt-1">
         <p th:text="${post.content}"></p>

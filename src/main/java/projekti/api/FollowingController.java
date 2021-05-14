@@ -24,7 +24,7 @@ public class FollowingController {
     
     @RequestMapping(value = "/toggle-block/{userId}", method = {RequestMethod.POST})
     public FollowBlockDTO toggleBlock(@PathVariable Long userId) {
-        return followingService.toggleFollowing(userId);
+        return followingService.toggleBlock(userId);
     }
     
     @GetMapping("/status/{username}")

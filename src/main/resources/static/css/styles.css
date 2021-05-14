@@ -110,4 +110,8 @@ a, a:visited {
     .nav-pills button {
         width: 100%;
     }
+    
+    .like-button {
+        min-width: auto;
+    }
 }

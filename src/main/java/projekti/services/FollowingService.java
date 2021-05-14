@@ -8,6 +8,8 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import projekti.DTO.AccountDTO;
 import projekti.DTO.FollowBlockDTO;
@@ -149,7 +151,7 @@ public class FollowingService {
                 .collect(Collectors.toList());
     }
     
-    public FollowBlockDTO toggleFollowing(Long userId) {
+    public FollowBlockDTO toggleBlock(Long userId) {
         Account follower = accountRepository.getOne(userId);
         
         if(follower == null) 
