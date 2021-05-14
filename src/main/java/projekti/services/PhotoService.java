@@ -83,10 +83,10 @@ public class PhotoService {
             throw new RuntimeException("No account found with username: " + username);
         }
         
-        List<Long> likedPhotos = likeRepository.findPhotosLikedByUserId(SecurityHelper.requesterId())
-                .stream()
-                .map(l -> l.getPhotoId())
-                .collect(Collectors.toList());
+        List<Long> likedPhotos = likeRepository.findPhotosLikedByUserId(SecurityHelper.requesterId());
+               // .stream()
+               //.map(l -> l.getPhotoId())
+                //.collect(Collectors.toList());
         
         Long profilePictureId = albumOwner.getProfilePictureId();
         
@@ -142,7 +142,7 @@ public class PhotoService {
             throw new RuntimeException("No photo found with id: " + photoId);
         }
         
-        if(likeRepository.isPhotoLikedByUserId(photoId, liker.getId()).getIsLiked()) {
+        if(likeRepository.isPhotoLikedByUserId(photoId, liker.getId())) {
             throw new RuntimeException("Photo: " + photoId + " is already liked by " + liker.getUsername());
         }
         

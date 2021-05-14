@@ -68,8 +68,7 @@ public class PostService {
         
         Account liker = accountRepository.findByUsernameIgnoreCase(SecurityHelper.requesterUsername());
         
-        if(likeRepository.isPostLikedByUser(post.getId(), liker.getId()).getIsLiked()) {
-            logger.info("Post: " + postId + ", unliked by: " + SecurityHelper.requesterUsername());
+        if(likeRepository.isPostLikedByUser(post.getId(), liker.getId())) {
             throw new RuntimeException("Post already liked by the user");
         } else {
             ResourceLike like = new ResourceLike();
@@ -86,10 +85,10 @@ public class PostService {
         Account account = accountRepository.findByUsernameIgnoreCase(username);
         
         // Used to set canLike-flag.
-        List<Long> likedByRequester = likeRepository.findPostsLikedByUserId(SecurityHelper.requesterId())
-                .stream()
-                .map(item -> item.getPostId())
-                .collect(Collectors.toList());
+        List<Long> likedByRequester = likeRepository.findPostsLikedByUserId(SecurityHelper.requesterId());
+                //.stream()
+                //.map(item -> item.getPostId())
+               // .collect(Collectors.toList());
         
         // Used to set canComment-flag.
         List<String> followedByRequester = accountRepository.findAccountsByFollowerId(SecurityHelper.requesterId())
