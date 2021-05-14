@@ -10,29 +10,24 @@ import projekti.models.ResourceLike;
 @Repository
 public interface LikeRepository extends JpaRepository<ResourceLike, Long> {
     
-    @Query(value = "select count(rl.id) > 0 as isLiked from resource_like rl\n" +
-                    "join post_likes pl on pl.likes_id = rl.id\n" +
-                    "where pl.post_id = :post_id and rl.owner_id = :user_id",
-            nativeQuery = true)
-    public Boolean isPostLikedByUser(@Param("post_id") long postId, @Param("user_id") long id);
+    @Query("select count(rl.id) > 0 from ResourceLike rl "
+         + "join Post p on p.id = :post_id and p.owner.id = :user_id "
+         + "join p.likes pl on pl.id = rl.id")
+    public boolean isPostLikedByUser(@Param("post_id") long postId, @Param("user_id") long id);
     
+    @Query("select p.id from Post p "
+         + "join ResourceLike rl on rl.owner.id = :user_id "
+         + "join p.likes pl on pl.id = rl.id")
+    public List<Long> findIdsOfLikedPostsByUserId(@Param("user_id") long userId);
     
-    @Query(value = "select pl.post_id as postId from resource_like rl\n" +
-                    "join post_likes pl on pl.likes_id = rl.id\n" +
-                    "where rl.owner_id = :user_id",
-            nativeQuery = true)
-    public List<Long> findPostsLikedByUserId(@Param("user_id") long userId);
+    @Query("select count(rl.id) > 0 from ResourceLike rl "
+         + "join Photo p on p.id = :photo_id "
+         + "join p.likes pl on pl.id = rl.id "
+         + "where rl.owner.id = :user_id")
+    public boolean isPhotoLikedByUserId(@Param("photo_id") long photoId, @Param("user_id") long userId);
     
-    
-    @Query(value = "select count(l.id) > 0 as isLiked from resource_like l\n" +
-                   "join photo_likes pl on pl.photo_id = :photo_id and pl.likes_id = l.id\n" +
-                   "where l.owner_id = :user_id", nativeQuery = true)
-    public Boolean isPhotoLikedByUserId(@Param("photo_id") long photoId, @Param("user_id") long userId);
-    
-    @Query(value = "select p.id as photoId from photo p\n" +
-                   "join photo_likes pl on pl.photo_id = p.id\n" +
-                   "join resource_like l on l.id = pl.likes_id\n" +
-                   "where l.owner_id = :user_id", 
-            nativeQuery = true)
-    public List<Long> findPhotosLikedByUserId(@Param("user_id") long userId);
+    @Query("select p.id from Photo p "
+         + "join ResourceLike rl on rl.owner.id = :user_id "
+         + "join p.likes pl on pl.id = rl.id")
+    public List<Long> findIdsOfLikedPhotosByUserId(@Param("user_id") long userId);
 }

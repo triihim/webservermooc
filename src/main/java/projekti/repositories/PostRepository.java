@@ -16,6 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long>  {
     @EntityGraph(attributePaths = {"owner", "likes"})
     public List<Post> findPostsByOwnerUsernameIn(Collection<String> usernames, Pageable pageable);
     
+    // A monster that I am too afraid to refactor.
     @Query("select p from Post p "
             + "join Account a on a.id = p.owner.id "
             + "where (p.owner.id in "

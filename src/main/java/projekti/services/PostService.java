@@ -85,7 +85,7 @@ public class PostService {
         Account account = accountRepository.findByUsernameIgnoreCase(username);
         
         // Used to set canLike-flag.
-        List<Long> likedByRequester = likeRepository.findPostsLikedByUserId(SecurityHelper.requesterId());
+        List<Long> likedByRequester = likeRepository.findIdsOfLikedPostsByUserId(SecurityHelper.requesterId());
                 //.stream()
                 //.map(item -> item.getPostId())
                // .collect(Collectors.toList());

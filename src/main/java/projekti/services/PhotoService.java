@@ -83,11 +83,8 @@ public class PhotoService {
             throw new RuntimeException("No account found with username: " + username);
         }
         
-        List<Long> likedPhotos = likeRepository.findPhotosLikedByUserId(SecurityHelper.requesterId());
-               // .stream()
-               //.map(l -> l.getPhotoId())
-                //.collect(Collectors.toList());
-        
+        List<Long> likedPhotos = likeRepository.findIdsOfLikedPhotosByUserId(SecurityHelper.requesterId());
+
         Long profilePictureId = albumOwner.getProfilePictureId();
         
         boolean canComment = albumOwner.getUsername().equals(SecurityHelper.requesterUsername()) || 

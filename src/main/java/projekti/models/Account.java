@@ -30,14 +30,5 @@ public class Account extends AbstractPersistable<Long> {
     private String password;
     
     private Long profilePictureId;
-    
-    /*
-    @OneToOne
-    @Basic(fetch = FetchType.EAGER)
-    private Photo profilePicture;
-    
-    public Long getProfilePictureId() {
-        return profilePicture != null ? profilePicture.getId() : null;
-    }
-    */
+
 }
