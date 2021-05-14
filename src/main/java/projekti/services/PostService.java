@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,8 +39,11 @@ public class PostService {
     @Autowired
     private LikeRepository likeRepository;
     
-    @Autowired
-    private FollowingRepository followingRepository;
+    @Value("${projekti.posts.page-size}")
+    private int postsPageSize;
+       
+    @Value("${projekti.posts.comment-show-count}")
+    private int commentsPerPost;
     
     public Post createPost(PostDTO dto) {
         Account owner = accountRepository.findByUsernameIgnoreCase(SecurityHelper.requesterUsername());
@@ -93,8 +97,8 @@ public class PostService {
                 .map(f -> f.getUsername())
                 .collect(Collectors.toList());
         
-        Pageable postPageable = PageRequest.of(0, 25, Sort.by("createdAt").descending());
-        Pageable commentPageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        Pageable postPageable = PageRequest.of(0, postsPageSize, Sort.by("createdAt").descending());
+        Pageable commentPageable = PageRequest.of(0, commentsPerPost, Sort.by("createdAt").descending());
         
         return postRepository.findFeedPosts(account.getId(), SecurityHelper.requesterId(), postPageable)
                 .stream()

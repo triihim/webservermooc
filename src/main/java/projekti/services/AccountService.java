@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,6 +35,9 @@ public class AccountService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
+    @Value("${projekti.users-search.page-size}")
+    private int usersSearchPageSize;
+    
     public void register(RegistrationDTO dto) {
         logger.info("Registering user: " + dto.getUsername());
         Account account = new Account();
@@ -61,8 +65,7 @@ public class AccountService {
     }
     
     public UserSearchDTO getAccountNamesContaining(String partial, int page) {
-        final int pageSize = 10;
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("lastName").ascending().and(Sort.by("firstName").ascending()));
+        Pageable pageable = PageRequest.of(page, usersSearchPageSize, Sort.by("lastName").ascending().and(Sort.by("firstName").ascending()));
         List<AccountDTO> accounts = accountRepository.findByPartialNameOrUsername(partial, pageable)
                 .stream()
                 .map(account -> {
@@ -75,8 +78,8 @@ public class AccountService {
                 })
                 .collect(Collectors.toList());
         
-        int totalPages = partial.length() > 0 ? (accounts.size() + pageSize - 1) / pageSize
-                : (int)(accountRepository.count() + pageSize - 1) / pageSize;
+        int totalPages = partial.length() > 0 ? (accounts.size() + usersSearchPageSize - 1) / usersSearchPageSize
+                : (int)(accountRepository.count() + usersSearchPageSize - 1) / usersSearchPageSize;
         
         totalPages += totalPages == 0 ? 1 : 0;
         
