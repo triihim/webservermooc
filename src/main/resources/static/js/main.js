@@ -94,3 +94,14 @@ function showNotification(message, type, details) {
     }, duration);
 }
 
+function commentHtml(comment) {
+    return (
+        '<div class="comment">' +
+            '<div class="d-flex align-items-end justify-content-between">' +
+                '<p class="m-0"><a href="' + context + 'account/' + comment.author + '">' + comment.author + '</a></p>' +
+                '<p class="timestamp comment-timestamp m-0 text-muted">' + formatServerDateTime(comment.createdAt) + '</p>' +
+            '</div>' +
+            '<p>' + comment.content + '</p>' +
+        '</div>'
+    );
+}

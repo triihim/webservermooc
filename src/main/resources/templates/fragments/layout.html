@@ -170,6 +170,30 @@
             </div>
         </header>
         
+        <div th:fragment="controls(canLike, canComment, likes)" class="mb-3 d-flex">
+            <button class="like-button btn btn-outline-primary me-2" th:disabled="${!canLike}">
+                <i th:if="${!canLike}" class="bi bi-hand-thumbs-up-fill"></i>
+                <i th:if="${canLike}" class="bi bi-hand-thumbs-up"></i>
+                <span class="like-badge badge rounded-pill bg-light text-dark" th:text="${likes}">-</span>
+            </button>
+            <div class="input-group">
+                <input th:disabled="${!canComment}" class="comment-field form-control" th:placeholder="${canComment ? 'Comment' : 'Only followers of the author can comment'}" maxlength="60" />
+                <button th:disabled="${!canComment}" class="comment-button btn btn-outline-success input-group-append">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </button>
+            </div>
+        </div>
+
+        <div th:fragment="comments(comments)" class="comments">
+            <div class="comment" th:each="comment : ${comments}">
+                <div class="d-flex align-items-end justify-content-between">
+                    <p class="m-0"><a th:href="@{/account/{author}(author=${comment.author})}" th:text="${comment.author}"></a></p>
+                    <p class="timestamp comment-timestamp m-0 text-muted" th:text="${comment.createdAt}"></p>
+                </div>
+                <p th:text="${comment.content}"></p>
+            </div>
+        </div>
+        
         <th:block th:fragment="scripts">
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
             <script th:src="@{/js/main.js}"></script>

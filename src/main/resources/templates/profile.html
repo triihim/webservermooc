@@ -129,25 +129,13 @@
                 sendRequest(request, onSuccess, onError);
             }
             
-            function commentHtml(comment) {
-                return (
-                    '<div class="post-comment">' +
-                        '<div class="d-flex align-items-end justify-content-between">' +
-                            '<p class="m-0"><a href="' + context + 'account/' + comment.author + '">' + comment.author + '</a></p>' +
-                            '<p class="timestamp comment-timestamp m-0 text-muted">' + formatServerDateTime(comment.createdAt) + '</p>' +
-                        '</div>' +
-                        '<p>' + comment.content + '</p>' +
-                    '</div>'
-                );
-            }
-            
             function handlePostCommentSubmit(inputField, submitButton, postId) {
                 function onSuccess(data) {
                     var json = JSON.parse(data);
                     inputField.value = "";
                     submitButton.disabled = false;
-                    var commentsSection = document.querySelector("[data-postid='" + postId + "'] .post-comments");
-                    var commentCount = commentsSection.querySelectorAll(".post-comment").length;
+                    var commentsSection = document.querySelector("[data-postid='" + postId + "'] .comments");
+                    var commentCount = commentsSection.querySelectorAll(".comment").length;
                     
                     if(commentCount >= 10) {
                         commentsSection.removeChild(commentsSection.lastElementChild);
@@ -249,6 +237,36 @@
                     var request = new Request(url, "POST");
                     sendRequest(request, onSuccess, onError);
                 }
+                
+                function handlePhotoCommentSubmit(inputField, submitButton, photoId) {
+                    function onSuccess(data) {
+                        var json = JSON.parse(data);
+                        inputField.value = "";
+                        submitButton.disabled = false;
+                        var commentsSection = document.querySelector("[data-photoid='" + photoId + "'] .comments");
+                        var commentCount = commentsSection.querySelectorAll(".comment").length;
+
+                        if(commentCount >= 10) {
+                            commentsSection.removeChild(commentsSection.lastElementChild);
+                        }
+
+                        var existingHtml = commentsSection.innerHTML;
+
+                        commentsSection.innerHTML = commentHtml(json) + existingHtml;
+                    }
+                    function onError(error) {
+                        submitButton.disabled = false;
+                        console.error(error);
+                        showNotification("Error happened trying to comment a photo", "danger", JSON.stringify(error));
+                    }
+
+                    if(inputField.value.length > 0) {
+                        submitButton.disabled = true;
+                        var url = context + "api/photos/" + photoId + "/comment";
+                        var request = new Request(url, "POST", "application/json", JSON.stringify({ content: inputField.value }));
+                        sendRequest(request, onSuccess, onError);
+                    }
+                }
             
                 var photoWrappers = document.querySelectorAll(".album-photo");
                 photoWrappers.forEach(function(pEl) {
@@ -259,12 +277,26 @@
                         likePhoto(likeButton, photoId);
                     });
                     
+                    var commentButton = pEl.querySelector(".comment-button");
+                    var commentField = pEl.querySelector(".comment-field");
+                    commentButton.addEventListener("click", function() {
+                        handlePhotoCommentSubmit(commentField, commentButton, photoId);
+                    });
+                    
+                    commentField.addEventListener("keyup", function(e) {
+                        if(e.keyCode === 13) { // enter
+                            e.preventDefault();
+                            commentButton.click();
+                        } 
+                    });
+                    
                     if(isOwner) {
                         var deleteButton = pEl.querySelector(".photo-delete-button");
                         deleteButton.addEventListener("click", function() {
                             deletePhoto(deleteButton, photoId);
                         });
                     }
+                    
                 });
             }
             

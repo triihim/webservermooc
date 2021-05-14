@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -112,7 +111,15 @@ public class AjaxController {
         if(dto.getContent().length() < 1 || dto.getContent().length() > 60) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Comment length is limited to 1-60 characters");
         }
-        return commentService.comment(id, dto.getContent());
+        return commentService.commentPost(id, dto.getContent());
+    }
+    
+    @RequestMapping(value = "/photos/{id}/comment", method = {RequestMethod.POST})
+    public CommentDTO commentPhoto(@PathVariable Long id, @RequestBody CommentDTO dto) {
+        if(dto.getContent().length() < 1 || dto.getContent().length() > 60) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Comment length is limited to 1-60 characters");
+        }
+        return commentService.commentPhoto(id, dto.getContent());
     }
     
     @GetMapping("/followers/{username}")

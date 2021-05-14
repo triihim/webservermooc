@@ -43,7 +43,7 @@ public class AccountController {
         model.addAttribute("account", dto);
         model.addAttribute("isBlocked", followingService.isBlocked(username, SecurityHelper.requesterUsername()));
         
-        return "account";
+        return "profile";
     }
     
     @GetMapping("/account-search")

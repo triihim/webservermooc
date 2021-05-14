@@ -24,6 +24,5 @@ public class Comment extends AbstractPersistable<Long> {
     
     private LocalDateTime createdAt;
     
-    @ManyToOne
-    private Post post;
+
 }

@@ -8,6 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import projekti.DTO.PhotoDTO;
@@ -18,6 +21,7 @@ import projekti.models.Photo;
 import projekti.models.Account;
 import projekti.models.ResourceLike;
 import projekti.repositories.AccountRepository;
+import projekti.repositories.FollowingRepository;
 import projekti.repositories.LikeRepository;
 
 @Service
@@ -34,8 +38,17 @@ public class PhotoService {
     @Autowired
     private LikeRepository likeRepository;
     
+    @Autowired
+    private FollowingRepository followingRepository;
+    
+    @Autowired
+    private CommentService commentService;
+    
     @Value("${projekti.photo.max-count}")
-    private long maxPhotoCount;
+    private int maxPhotoCount;
+    
+    @Value("${projekti.photos.comment-show-count}")
+    private int commentShowCount;
     
     @Transactional
     public void savePhoto(MultipartFile file, String description) throws IOException {
@@ -64,12 +77,23 @@ public class PhotoService {
     
     @Transactional
     public List<PhotoDTO> getUserPhotos(String username) {
+        Account albumOwner = accountRepository.findByUsernameIgnoreCase(username);
+        
+        if(albumOwner == null) {
+            throw new RuntimeException("No account found with username: " + username);
+        }
+        
         List<Long> likedPhotos = likeRepository.findPhotosLikedByUserId(SecurityHelper.requesterId())
                 .stream()
                 .map(l -> l.getPhotoId())
                 .collect(Collectors.toList());
         
-        Long profilePictureId = accountRepository.findByUsernameIgnoreCase(username).getProfilePictureId();
+        Long profilePictureId = albumOwner.getProfilePictureId();
+        
+        boolean canComment = albumOwner.getUsername().equals(SecurityHelper.requesterUsername()) || 
+                followingRepository.isFollowing(albumOwner.getId(), SecurityHelper.requesterId());
+        
+        Pageable commentPageable = PageRequest.of(0, commentShowCount, Sort.by("createdAt").descending());
         
         return photoRepository.findAllWithLikesByOwner_usernameIgnoreCase(username)
                 .stream()
@@ -78,7 +102,9 @@ public class PhotoService {
                             p.getDescription(), 
                             p.getLikes().size(), 
                             !likedPhotos.contains(p.getId()), 
-                            profilePictureId != null && p.getId() != null && profilePictureId.equals(p.getId())
+                            canComment,
+                            profilePictureId != null && p.getId() != null && profilePictureId.equals(p.getId()),
+                            commentService.getPhotoComments(p.getId(), commentPageable)
                         )
                 )
                 .collect(Collectors.toList());

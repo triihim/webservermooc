@@ -58,6 +58,22 @@ public class RegistrationTests {
         Assert.assertTrue(content.contains("passwords do not match"));
         Assert.assertTrue(accountRepository.findByUsernameIgnoreCase("uname2") == null);
     }
-            
+    
+    @Test
+    public void registrationFailsWithNonAlphanumericUsername() throws Exception {
+        MvcResult result = mockMvc.perform(post("/register")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("firstName", "fname")
+                .param("lastName", "lname")
+                .param("username", "_uname_")
+                .param("password", "password1234")
+                .param("passwordConfirm", "invalid"))
+                    .andReturn();
+        
+        String content = result.getResponse().getContentAsString();
+        
+        Assert.assertTrue(content.contains("passwords do not match"));
+        Assert.assertTrue(accountRepository.findByUsernameIgnoreCase("uname2") == null);
+    }
     
 }

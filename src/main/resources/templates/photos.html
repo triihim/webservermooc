@@ -31,21 +31,19 @@
             <div class="card-body info">
                 <p class="card-text" th:text="${photo.description}"></p>
                 <div class="d-flex">
-                    <button class="like-button btn btn-outline-primary" th:disabled="${!photo.canLike}">
-                        <i class="bi bi-hand-thumbs-up"></i>
-                        <span class="like-badge badge rounded-pill bg-light text-dark" th:text="${photo.likes}">0</span>
-                    </button>
                     <div class="d-flex flex-grow-1 justify-content-end">
                         <form th:if="${!photo.isProfilePicture()}" class="me-2 ms-2" th:action="@{/account/profile-picture}" method="post">
                             <button th:if="${owner}" class="btn btn-outline-secondary" type="submit" name="photoId" th:value="${photo.id}">
                                 Set profile picture
                             </button>
                         </form>
-                        <button th:if="${owner}" class="btn btn-outline-danger photo-delete-button">
+                        <button th:if="${owner}" class="btn btn-outline-danger photo-delete-button mb-3">
                             Delete
                         </button>
                     </div>
                 </div>
+                <div th:replace="fragments/layout :: controls(canLike=${photo.canLike}, canComment=${photo.canComment}, likes=${photo.likes})"></div>
+                <div th:replace="fragments/layout :: comments(comments=${photo.comments})"></div>
             </div>
         </div>
     </div>

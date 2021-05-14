@@ -1,5 +1,6 @@
 package projekti.DTO;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,10 @@ public class PhotoDTO {
     
     private boolean canLike;
     
+    private boolean canComment;
+    
     private boolean isProfilePicture;
+    
+    private List<CommentDTO> comments;
 
 }

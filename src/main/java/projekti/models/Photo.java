@@ -29,4 +29,7 @@ public class Photo extends AbstractPersistable<Long> {
     
     @OneToMany
     private List<ResourceLike> likes;
+    
+    @OneToMany
+    private List<Comment> comments;
 }

@@ -57,11 +57,11 @@ main {
    vertical-align: bottom;
 }
 
-.post-content, .post-comment {
+.post-content, .comment {
     word-break: break-all;
 }
 
-.post-comment {
+.comment {
     font-size: .9rem;
     padding: 5px 10px;
     margin: 10px 0;
@@ -70,7 +70,7 @@ main {
     border-radius: 5px;
 }
 
-.post-comment p {
+.comment p {
     margin: 0;
 }
 
