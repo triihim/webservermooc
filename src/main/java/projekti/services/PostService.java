@@ -105,7 +105,7 @@ public class PostService {
                 .map(p -> {
                     PostDTO dto = new PostDTO();
                     dto.setCanLike(!likedByRequester.contains(p.getId()));
-                    dto.setCanComment(followedByRequester.contains(p.getOwnerUsername()) || p.getOwnerUsername().equals(SecurityHelper.requesterUsername()));
+                    dto.setCanComment(p.getOwnerUsername().equals(SecurityHelper.requesterUsername()) || followedByRequester.contains(p.getOwnerUsername()));
                     dto.setContent(p.getContent());
                     dto.setCreatedAt(p.getCreatedAt());
                     dto.setId(p.getId());

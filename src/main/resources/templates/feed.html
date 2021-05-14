@@ -12,7 +12,7 @@
         <p th:text="${post.content}"></p>
     </div>
 
-    <div th:replace="fragments/layout :: controls(canLike=${post.canLike}, canComment=${post.canComment}, likes=${post.likes})"></div>
+    <div th:replace="fragments/layout :: controls(canLike=${post.canLike}, canComment=${post.canComment}, likes=${post.likes}, cantCommentMessage='Only followers of the author can comment')"></div>
     <div th:replace="fragments/layout :: comments(comments=${post.comments})"></div>
     
 </div>

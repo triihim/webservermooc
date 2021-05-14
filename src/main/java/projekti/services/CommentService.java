@@ -89,7 +89,7 @@ public class CommentService {
     
     @Cacheable(cacheNames = {"photo-comments"}, key = "#photoId")
     public List<CommentDTO> getPhotoComments(long photoId, Pageable pageable) {
-        return commentRepository.findByPostId(photoId, pageable)
+        return commentRepository.findByPhotoId(photoId, pageable)
                 .stream()
                 .map(c -> new CommentDTO(c.getId(), photoId, c.getContent(), c.getOwner().getUsername(), c.getCreatedAt()))
                 .collect(Collectors.toList());

@@ -42,7 +42,7 @@
                         </button>
                     </div>
                 </div>
-                <div th:replace="fragments/layout :: controls(canLike=${photo.canLike}, canComment=${photo.canComment}, likes=${photo.likes})"></div>
+                <div th:replace="fragments/layout :: controls(canLike=${photo.canLike}, canComment=${photo.canComment}, likes=${photo.likes}, cantCommentMessage='Only followers can comment')"></div>
                 <div th:replace="fragments/layout :: comments(comments=${photo.comments})"></div>
             </div>
         </div>
