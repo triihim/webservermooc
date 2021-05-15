@@ -85,6 +85,10 @@ public class PostService {
     public List<PostDTO> getUserFeed(String username) {
         Account account = accountRepository.findByUsernameIgnoreCase(username);
         
+        if(account == null) throw new AccountNotFoundException("No account found with username: " + username);
+        
+        logger.info("Fetching feed for user: " + username);
+        
         // Used to set canLike-flag.
         List<Long> likedByRequester = likeRepository.findIdsOfLikedPostsByUserId(SecurityHelper.requesterId());
         

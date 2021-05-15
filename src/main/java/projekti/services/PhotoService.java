@@ -68,6 +68,8 @@ public class PhotoService {
         photo.setOwner(uploader);
         
         photoRepository.save(photo);
+        
+        logger.info(SecurityHelper.requesterUsername() + " saved a photo: " + photo.getId());
     }
     
     public boolean isMaxPhotosReached(String username) {
