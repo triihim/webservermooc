@@ -11,6 +11,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import projekti.DTO.CommentDTO;
+import projekti.exceptions.PhotoNotFoundException;
+import projekti.exceptions.PostNotFoundException;
 import projekti.helpers.SecurityHelper;
 import projekti.helpers.TimestampHelper;
 import projekti.models.Comment;
@@ -46,7 +48,7 @@ public class CommentService {
         Post post = postRepository.getOne(postId);
         
         if(post == null) {
-            throw new RuntimeException("No post found to comment with id: " + postId);
+            throw new PostNotFoundException("No post found to comment with id: " + postId);
         }
         
         Comment c = new Comment(comment, commenter, TimestampHelper.getCurrentDateTime());
@@ -66,7 +68,7 @@ public class CommentService {
         Photo photo = photoRepository.getOne(photoId);
         
         if(photo == null) {
-            throw new RuntimeException("No photo found to comment with id: " + photoId);
+            throw new PhotoNotFoundException("No photo found to comment with id: " + photoId);
         }
         
         Comment c = new Comment(comment, commenter, TimestampHelper.getCurrentDateTime());

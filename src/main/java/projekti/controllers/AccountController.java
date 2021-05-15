@@ -34,15 +34,9 @@ public class AccountController {
     @GetMapping("/account/{username}")
     public String accountPage(Model model, @PathVariable String username, Authentication authentication) {
         AccountDTO dto = accountService.getAccount(username);
-        
-        if(dto == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        
         model.addAttribute("owner", SecurityHelper.accessorIsLoggedInUser(username));
         model.addAttribute("account", dto);
         model.addAttribute("isBlocked", followingService.isBlocked(username, SecurityHelper.requesterUsername()));
-        
         return "profile";
     }
     

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="fragments/layout :: head(title='Error')"></head>
+    <body>
+        <div id="page-container" class="container">
+            <main>
+                <div class="d-flex flex-column align-items-center">
+                    <h1 th:text="${status}"></h1>
+                    <h4 th:text="${error}"></h4>
+                    <p th:text="${message}"></p>
+                </div>
+            </main>
+        </div>
+    </body>
+</html>

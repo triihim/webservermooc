@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 import projekti.DTO.AccountDTO;
 import projekti.DTO.RegistrationDTO;
 import projekti.DTO.UserSearchDTO;
+import projekti.exceptions.AccountNotFoundException;
+import projekti.exceptions.ForbiddenException;
+import projekti.exceptions.PhotoNotFoundException;
 import projekti.helpers.SecurityHelper;
 import projekti.repositories.AccountRepository;
 import projekti.models.Account;
@@ -53,7 +56,7 @@ public class AccountService {
     public AccountDTO getAccount(String username) {
         Account account = accountRepository.findByUsernameIgnoreCase(username);
         
-        if(account == null) return null;
+        if(account == null) throw new AccountNotFoundException("No account found by username: " + username);
         
         AccountDTO dto = new AccountDTO();
         
@@ -97,11 +100,13 @@ public class AccountService {
         logger.info(SecurityHelper.requesterUsername() + " attempts to set profile picture to photo: " + photo.getId());
         
         if(photo == null) {
-            throw new RuntimeException("No photo found with id " + photoId);
+            throw new PhotoNotFoundException("No photo found by id: " + String.valueOf(photoId));
         }
         
-        if(!photo.getOwner().getId().equals(account.getId())) {
-            throw new RuntimeException("Photo " + photoId + " is not owned by " + account.getUsername());
+        long ownerId = photo.getOwner().getId();
+
+        if(ownerId != SecurityHelper.requesterId()) {
+            throw new ForbiddenException("Photo " + photoId + " is not owned by " + account.getUsername());
         }
         
         account.setProfilePictureId(photo.getId());

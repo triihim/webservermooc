@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import projekti.DTO.PhotoDTO;
 import projekti.DTO.PhotoLikeResponseDTO;
+import projekti.exceptions.AccountNotFoundException;
+import projekti.exceptions.ForbiddenException;
+import projekti.exceptions.PhotoLimitReachedException;
+import projekti.exceptions.PhotoNotFoundException;
 import projekti.helpers.SecurityHelper;
 import projekti.repositories.PhotoRepository;
 import projekti.models.Photo;
@@ -55,7 +59,7 @@ public class PhotoService {
         Account uploader = accountRepository.getOne(SecurityHelper.requesterId());
         
         if(isMaxPhotosReached(description)) {
-            throw new RuntimeException("Photo limit reached");
+            throw new PhotoLimitReachedException("Photo limit reached for user: " + SecurityHelper.requesterUsername());
         }
         
         Photo photo = new Photo();
@@ -72,7 +76,9 @@ public class PhotoService {
     
     @Transactional
     public byte[] getPhotoContent(long photoId) {
-        return photoRepository.findWithContentById(photoId).getContent();
+        Photo photo = photoRepository.findWithContentById(photoId);
+        if(photo == null) throw new PhotoNotFoundException("No photo found with id: " + photoId);
+        return photo.getContent();
     }
     
     @Transactional
@@ -80,7 +86,7 @@ public class PhotoService {
         Account albumOwner = accountRepository.findByUsernameIgnoreCase(username);
         
         if(albumOwner == null) {
-            throw new RuntimeException("No account found with username: " + username);
+            throw new AccountNotFoundException("No account found with username: " + username);
         }
         
         List<Long> likedPhotos = likeRepository.findIdsOfLikedPhotosByUserId(SecurityHelper.requesterId());
@@ -112,12 +118,14 @@ public class PhotoService {
         Photo photo = photoRepository.findWithOwnerById(photoId);
         
         if(photo == null) {
-            throw new RuntimeException("No photo found with id: " + photoId);
+            throw new PhotoNotFoundException("No photo found with id: " + photoId);
         }
         
         if(!SecurityHelper.accessorIsLoggedInUser(photo.getOwner().getUsername())) {
-            throw new RuntimeException("Can only delete own photos");
+            throw new ForbiddenException("Can only delete own photos");
         }
+        
+        logger.info(SecurityHelper.requesterUsername() + " deletes photo: " + photoId);
         
         Account photoUser = accountRepository.findByProfilePictureId(photoId);
         
@@ -136,7 +144,7 @@ public class PhotoService {
         Photo photo = photoRepository.findWithLikesById(photoId);
         
         if(photo == null) {
-            throw new RuntimeException("No photo found with id: " + photoId);
+            throw new PhotoNotFoundException("No photo found with id: " + photoId);
         }
         
         if(likeRepository.isPhotoLikedByUserId(photoId, liker.getId())) {

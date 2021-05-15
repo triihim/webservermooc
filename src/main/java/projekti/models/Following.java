@@ -1,6 +1,7 @@
 package projekti.models;
 
 import java.time.LocalDateTime;
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -15,10 +16,12 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @AllArgsConstructor
 public class Following extends AbstractPersistable<Long> {
     
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @Basic(fetch = FetchType.EAGER)
     private Account follower;
     
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @Basic(fetch = FetchType.EAGER)
     private Account followee;
     
     private boolean isFollowerBlocked;

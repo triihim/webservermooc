@@ -21,6 +21,8 @@ import projekti.models.Following;
 import projekti.repositories.AccountRepository;
 import projekti.repositories.FollowingRepository;
 import projekti.DTO.FollowingDTO;
+import projekti.exceptions.AccountNotFoundException;
+import projekti.exceptions.FollowingException;
 
 @Service
 public class FollowingService {
@@ -38,7 +40,7 @@ public class FollowingService {
         Account follower = accountRepository.findByUsernameIgnoreCase(SecurityHelper.requesterUsername());
         Account followee = accountRepository.findByUsernameIgnoreCase(username);
         
-        if(followee == null) throw new RuntimeException("No user found to toggle follow for: " + username);
+        if(followee == null) throw new AccountNotFoundException("No user found to toggle follow for: " + username);
         
         List<Following> existingFollowings = followingRepository.findByFollowee_username(username);
         if(followingRepository.isFollowing(followee.getId(), follower.getId())) {
@@ -48,7 +50,7 @@ public class FollowingService {
                     .findFirst()
                     .orElse(null);
             
-            if(existing == null) throw new RuntimeException("Failed to find existing following");
+            if(existing == null) throw new FollowingException("Failed to find existing following");
 
             existingFollowings.remove(existing);
             followingRepository.delete(existing);
@@ -70,13 +72,13 @@ public class FollowingService {
     public boolean isBlocked(String firstUser, String secondUser) {
         if(firstUser.equalsIgnoreCase(secondUser)) return false;
         List<Account> accounts = accountRepository.findByUsernameIn(Arrays.asList(firstUser, secondUser));
-        if(accounts.size() != 2) throw new RuntimeException("Could not find accounts by usernames: " + firstUser + ", " + secondUser);
+        if(accounts.size() != 2) throw new AccountNotFoundException("Could not find accounts by usernames: " + firstUser + ", " + secondUser);
         return followingRepository.isBlocked(accounts.get(0).getId(), accounts.get(1).getId());
     }
     
     public FollowingDTO getFollowingStatus(String username) {
         Account followee = accountRepository.findByUsernameIgnoreCase(username);
-        if(followee == null) throw new RuntimeException("No user found to toggle follow for: " + username);
+        if(followee == null) throw new AccountNotFoundException("No user found to toggle follow for: " + username);
         
         boolean isFollowedByRequester = followingRepository.isFollowing(followee.getId(), SecurityHelper.requesterId());
         
@@ -155,13 +157,13 @@ public class FollowingService {
         Account follower = accountRepository.getOne(userId);
         
         if(follower == null) 
-            throw new RuntimeException("No user found with id: " + userId);
+            throw new AccountNotFoundException("No user found with id: " + userId);
         
         
         Following following = followingRepository.findByFollowee_usernameAndFollower_username(SecurityHelper.requesterUsername(), follower.getUsername());
         
         if(following == null) {
-            throw new RuntimeException(follower.getUsername() + " is not following " + SecurityHelper.requesterUsername());
+            throw new FollowingException(follower.getUsername() + " is not following " + SecurityHelper.requesterUsername());
         }
         
         if(following.isFollowerBlocked() == true) {

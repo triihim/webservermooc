@@ -12,13 +12,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import projekti.DTO.PostDTO;
+import projekti.exceptions.AccountNotFoundException;
+import projekti.exceptions.PostNotFoundException;
 import projekti.helpers.SecurityHelper;
 import projekti.helpers.TimestampHelper;
 import projekti.models.Post;
 import projekti.models.Account;
 import projekti.models.ResourceLike;
 import projekti.repositories.AccountRepository;
-import projekti.repositories.FollowingRepository;
 import projekti.repositories.LikeRepository;
 import projekti.repositories.PostRepository;
 
@@ -48,7 +49,7 @@ public class PostService {
     public Post createPost(PostDTO dto) {
         Account owner = accountRepository.findByUsernameIgnoreCase(SecurityHelper.requesterUsername());
         
-        if(owner == null) throw new RuntimeException("No acount found");
+        if(owner == null) throw new AccountNotFoundException();
         
         Post post = new Post();
         post.setContent(dto.getContent());
@@ -64,7 +65,7 @@ public class PostService {
     public int likePost(Long postId) {
         Post post = postRepository.findById(postId).orElse(null);
         
-        if(post == null) throw new RuntimeException("No post found with id: " + postId);
+        if(post == null) throw new PostNotFoundException("No post found with id: " + postId);
         
         Account liker = accountRepository.findByUsernameIgnoreCase(SecurityHelper.requesterUsername());
         
