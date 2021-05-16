@@ -106,7 +106,7 @@ public class PostService {
         Pageable postPageable = PageRequest.of(0, postsPageSize, Sort.by("createdAt").descending());
         Pageable commentPageable = PageRequest.of(0, commentsPerPost, Sort.by("createdAt").descending());
         
-        return postRepository.getFeedPosts(account.getId(),  postPageable)
+        return postRepository.getFeedPosts(account.getId(), postPageable)
                 .stream()
                 .map(p -> {
                     PostDTO dto = new PostDTO();
