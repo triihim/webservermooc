@@ -2,7 +2,7 @@
     <p th:if="${users.empty}" class="text-center p-5">
         Nobody here yet &#128533;
     </p>
-    <div th:each="user : ${users}" th:attr="data-userid=${user.userId}">
+    <div th:each="user : ${users}" data-th-attr="data-userid=${user.userId}, data-username=${user.username}">
         <div class="card mb-2">
             <div class="card-body">
                 <div class="d-flex flex-sm-row flex-column align-items-sm-center">

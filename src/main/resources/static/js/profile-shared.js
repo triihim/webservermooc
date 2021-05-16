@@ -245,11 +245,11 @@ function enhanceFollowersFunctionality() {
     followerWrappers.forEach(function(followerEl) {
         var timestamp = followerEl.querySelector(".timestamp");
         timestamp.innerText = formatServerDateTime(timestamp.innerText);
-        var followerId = followerEl.dataset.userid;
+        var followerName = followerEl.dataset.username;
         var blockButton = followerEl.querySelector(".block-follower-button");
-        if(!blockButton) return;
+        if(!blockButton) return; // Buttons are rendered on the backend only for the owner of the follower listing page.
         blockButton.addEventListener("click", function() {
-            toggleBlock(blockButton, followerId);
+            toggleBlock(blockButton, followerName);
         });
     });
 }

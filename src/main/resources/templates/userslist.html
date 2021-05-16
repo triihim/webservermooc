@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <nav class="mt-4">
-                        <form th:action='@{/account-search}' method="get" class="d-flex flex-row align-items-center justify-content-center">
+                        <form th:action='@{/account/search}' method="get" class="d-flex flex-row align-items-center justify-content-center">
                             <input type="hidden" name="query" th:value="${query}">
                             <button th:disabled="${currentPage == 0}" name="page" th:value="${currentPage - 1}" class="btn btn-lg btn-link" type="submit">
                                 <i class="bi bi-arrow-left-circle-fill"></i>

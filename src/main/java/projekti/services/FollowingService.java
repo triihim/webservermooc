@@ -41,6 +41,10 @@ public class FollowingService {
         Account followee = accountRepository.findByUsernameIgnoreCase(username);
         
         if(followee == null) throw new AccountNotFoundException("No user found to toggle follow for: " + username);
+
+        if(follower.getUsername().equalsIgnoreCase(followee.getUsername())) {
+            throw new FollowingException("Can not follow oneself");
+        }
         
         List<Following> existingFollowings = followingRepository.findByFollowee_username(username);
         if(followingRepository.isFollowing(followee.getId(), follower.getId())) {
@@ -69,11 +73,11 @@ public class FollowingService {
         
     }
     
-    public boolean isBlocked(String firstUser, String secondUser) {
+    public boolean isEitherBlocked(String firstUser, String secondUser) {
         if(firstUser.equalsIgnoreCase(secondUser)) return false;
         List<Account> accounts = accountRepository.findByUsernameIn(Arrays.asList(firstUser, secondUser));
         if(accounts.size() != 2) throw new AccountNotFoundException("Could not find accounts by usernames: " + firstUser + ", " + secondUser);
-        return followingRepository.isBlocked(accounts.get(0).getId(), accounts.get(1).getId());
+        return followingRepository.isEitherBlocking(accounts.get(0).getId(), accounts.get(1).getId());
     }
     
     public FollowingDTO getFollowingStatus(String username) {
@@ -83,26 +87,6 @@ public class FollowingService {
         boolean isFollowedByRequester = followingRepository.isFollowing(followee.getId(), SecurityHelper.requesterId());
         
         return new FollowingDTO(isFollowedByRequester, followee.getUsername(), followingRepository.findByFollowee_username(username).size());
-    }
-    
-    public List<AccountDTO> getFollowers(String username) {
-        Account a = accountRepository.findByUsernameIgnoreCase(username);
-        return accountRepository.findAccountsByFolloweeId(a.getId())
-                .stream()
-                .map(f -> {
-                    return new AccountDTO(f.getFirstName(), f.getLastName(), f.getUsername(), f.getProfilePictureId());
-                })
-                .collect(Collectors.toList());
-    }
-    
-    public List<AccountDTO> getFollowees(String username) {
-        Account a = accountRepository.findByUsernameIgnoreCase(username);
-        return accountRepository.findAccountsByFollowerId(a.getId())
-                .stream()
-                .map(f -> {
-                    return new AccountDTO(f.getFirstName(), f.getLastName(), f.getUsername(), f.getProfilePictureId());
-                })
-                .collect(Collectors.toList());
     }
     
     public List<FollowListItemDTO> getFollowersListing(String followee) {
@@ -132,7 +116,7 @@ public class FollowingService {
     public List<FollowListItemDTO> getFolloweesListing(String username) {
         Account account = accountRepository.findByUsernameIgnoreCase(username);
         
-        Set<String> blockers = accountRepository.findBlockedBothways(account.getUsername())
+        Set<String> blockers = accountRepository.findBlockersOf(account.getUsername())
                 .stream()
                 .map(a -> a.getUsername())
                 .collect(Collectors.toSet());
@@ -153,11 +137,15 @@ public class FollowingService {
                 .collect(Collectors.toList());
     }
     
-    public FollowBlockDTO toggleBlock(Long userId) {
-        Account follower = accountRepository.getOne(userId);
+    public FollowBlockDTO toggleBlock(String username) {
+        Account follower = accountRepository.findByUsernameIgnoreCase(username);
+        
+        if(username.equalsIgnoreCase(SecurityHelper.requesterUsername())) {
+            throw new FollowingException("Can not block oneself");
+        }
         
         if(follower == null) 
-            throw new AccountNotFoundException("No user found with id: " + userId);
+            throw new AccountNotFoundException("No user found with username: " + username);
         
         
         Following following = followingRepository.findByFollowee_usernameAndFollower_username(SecurityHelper.requesterUsername(), follower.getUsername());
@@ -168,10 +156,10 @@ public class FollowingService {
         
         if(following.isFollowerBlocked() == true) {
             following.setFollowerBlocked(false);
-            logger.info(SecurityHelper.requesterUsername() + " blocks the following of " + follower.getUsername());
+            logger.info(SecurityHelper.requesterUsername() + " unblocks the following of " + follower.getUsername());
         } else {
             following.setFollowerBlocked(true);
-            logger.info(SecurityHelper.requesterUsername() + " unblocks the following of " + follower.getUsername());
+            logger.info(SecurityHelper.requesterUsername() + " blocks the following of " + follower.getUsername());
         }
         
         Following updated = followingRepository.save(following);

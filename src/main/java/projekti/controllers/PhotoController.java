@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
+import projekti.exceptions.PhotoFormatException;
+import projekti.exceptions.PhotoSizeException;
 import projekti.services.PhotoService;
 
 @Controller
@@ -47,11 +49,11 @@ public class PhotoController {
     public String photoUpload(@RequestParam MultipartFile file, @RequestParam String description) {
         
         if(!file.getContentType().equals("image/png") && !file.getContentType().equals("image/jpeg")) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Supported formats are .png and .jpeg");
+            throw new PhotoFormatException("Supported formats are .png and .jpeg");
         }
         
         if(file.getSize() > maxPhotoSize) {
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "File is too large. Maximum file size is " + maxPhotoSize + " bytes");
+            throw new PhotoSizeException("File is too large. Maximum file size is " + maxPhotoSize + " bytes");
         }
         
         try {

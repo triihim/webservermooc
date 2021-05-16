@@ -27,7 +27,7 @@ public class PostsController {
     @Autowired
     private CommentService commentService;
     
-    @RequestMapping(value = "/", method = {RequestMethod.POST})
+    @RequestMapping(value = "", method = RequestMethod.POST)
     public Post createPost(@RequestBody PostDTO dto) {
         if(dto.getContent() == null || dto.getContent().length() < 1) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Post content empty");
@@ -36,13 +36,13 @@ public class PostsController {
         return postService.createPost(dto);
     }
     
-    @RequestMapping(value = "/{id}/like", method = {RequestMethod.POST})
+    @RequestMapping(value = "/{id}/like", method = RequestMethod.POST)
     public PostLikeResponseDTO likePost(@PathVariable Long id) {
         int likeCount = postService.likePost(id);
         return new PostLikeResponseDTO(id, SecurityHelper.requesterUsername(), likeCount);
     }
     
-    @RequestMapping(value = "/{id}/comment", method = {RequestMethod.POST})
+    @RequestMapping(value = "/{id}/comment", method = RequestMethod.POST)
     public CommentDTO commentPost(@PathVariable Long id, @RequestBody CommentDTO dto) {
         if(dto.getContent().length() < 1 || dto.getContent().length() > 60) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Comment length is limited to 1-60 characters");

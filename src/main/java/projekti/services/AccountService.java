@@ -55,8 +55,8 @@ public class AccountService {
     
     public AccountDTO getAccount(String username) {
         Account account = accountRepository.findByUsernameIgnoreCase(username);
-        
-        if(account == null) throw new AccountNotFoundException("No account found by username: " + username);
+
+        if(account == null) return null;
         
         AccountDTO dto = new AccountDTO();
         

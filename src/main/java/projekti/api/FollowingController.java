@@ -17,14 +17,14 @@ public class FollowingController {
     @Autowired
     private FollowingService followingService;
 
-    @RequestMapping(value = "/toggle-follow/{username}", method = {RequestMethod.POST}) 
+    @RequestMapping(value = "/toggle-follow/{username}", method = RequestMethod.POST) 
     public FollowingDTO toggleFollowing(@PathVariable String username) {
         return followingService.toggleFollowing(username);
     }
     
-    @RequestMapping(value = "/toggle-block/{userId}", method = {RequestMethod.POST})
-    public FollowBlockDTO toggleBlock(@PathVariable Long userId) {
-        return followingService.toggleBlock(userId);
+    @RequestMapping(value = "/toggle-block/{username}", method = RequestMethod.POST)
+    public FollowBlockDTO toggleBlock(@PathVariable String username) {
+        return followingService.toggleBlock(username);
     }
     
     @GetMapping("/status/{username}")

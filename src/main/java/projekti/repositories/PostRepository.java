@@ -32,4 +32,11 @@ public interface PostRepository extends JpaRepository<Post, Long>  {
                                     @Param("requester") long requesterId,
                                     Pageable pageable);
     
+    @Query("select p from Post p "
+         + "where p.owner.id = :feedOwner or p.owner.id in "
+            + "(select f.followee.id from Following f where f.follower.id = :feedOwner and f.isFollowerBlocked = false)")
+    public List<Post> getFeedPosts(@Param("feedOwner") long feedOwnerId,
+                              //@Param("requester") long requesterId,
+                              Pageable pageable);
+    
 }

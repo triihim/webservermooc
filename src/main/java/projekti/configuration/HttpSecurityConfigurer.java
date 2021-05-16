@@ -19,7 +19,7 @@ public class HttpSecurityConfigurer {
             .and()
             .formLogin().loginPage("/login").permitAll().defaultSuccessUrl("/account", true)
             .and()
-            .logout().logoutSuccessUrl("/");
+            .logout().deleteCookies("JSESSIONID").logoutSuccessUrl("/");
         
         http.csrf().ignoringAntMatchers("/api/**", "/account/profile-picture");
         

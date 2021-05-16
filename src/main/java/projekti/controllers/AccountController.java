@@ -36,18 +36,18 @@ public class AccountController {
         AccountDTO dto = accountService.getAccount(username);
         model.addAttribute("owner", SecurityHelper.accessorIsLoggedInUser(username));
         model.addAttribute("account", dto);
-        model.addAttribute("isBlocked", followingService.isBlocked(username, SecurityHelper.requesterUsername()));
+        model.addAttribute("isBlocked", followingService.isEitherBlocked(username, SecurityHelper.requesterUsername()));
         return "profile";
     }
     
-    @GetMapping("/account-search")
-    public String usersPage(@RequestParam String query, @RequestParam Optional<Integer> page, Model model) {
+    @GetMapping("/account/search")
+    public String userSearchPage(@RequestParam String query, @RequestParam Optional<Integer> page, Model model) {
         if(page.isPresent() && page.get() < 0) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page cannot be negative");
         UserSearchDTO result = accountService.getAccountNamesContaining(query, page.orElse(0));
         model.addAttribute("users", result.getUsers());
         model.addAttribute("currentPage", result.getCurrentPage());
         model.addAttribute("totalPages", result.getTotalPages());
-        return "users";
+        return "userslist";
     }
     
     @PostMapping("/account/profile-picture")

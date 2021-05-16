@@ -1,5 +1,6 @@
 package projekti;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import projekti.DTO.RegistrationDTO;
 import projekti.services.AccountService;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Service
 public class TestUtils {
@@ -21,7 +23,7 @@ public class TestUtils {
     private static boolean isMockAccountsPopulated = false;
     
     @Autowired
-    private TestUtils(AccountService accountService) {
+    private TestUtils(AccountService accountService, ObjectMapper mapper) {
         TestUtils.accountService = accountService;
     }
     
@@ -38,10 +40,15 @@ public class TestUtils {
     }
     
     public static MockHttpSession loginTestUser(MockMvc mockMvc) throws Exception {
+        return TestUtils.loginUser(mockMvc, "tester", "password1234");
+    }
+    
+    public static MockHttpSession loginUser(MockMvc mockMvc, String username, String password) throws Exception {
+        mockMvc.perform(post("/logout")).andExpect(status().is3xxRedirection());
         MvcResult result = mockMvc.perform(post("/login")
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .param("username", "tester")
-            .param("password", "password1234"))
+            .param("username", username)
+            .param("password", password))
                 .andReturn();
         
         return (MockHttpSession) result.getRequest().getSession(false);

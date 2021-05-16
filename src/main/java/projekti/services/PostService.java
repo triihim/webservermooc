@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import projekti.DTO.PostDTO;
 import projekti.exceptions.AccountNotFoundException;
+import projekti.exceptions.AlreadyLikedException;
 import projekti.exceptions.PostNotFoundException;
 import projekti.helpers.SecurityHelper;
 import projekti.helpers.TimestampHelper;
@@ -70,7 +71,7 @@ public class PostService {
         Account liker = accountRepository.findByUsernameIgnoreCase(SecurityHelper.requesterUsername());
         
         if(likeRepository.isPostLikedByUser(post.getId(), liker.getId())) {
-            throw new RuntimeException("Post already liked by the user");
+            throw new AlreadyLikedException("Post already liked by the user");
         } else {
             ResourceLike like = new ResourceLike();
             like.setOwner(liker);
@@ -80,6 +81,10 @@ public class PostService {
             logger.info("Post: " + postId + ", liked by: " + SecurityHelper.requesterUsername());
             return post.getLikes().size();
         }
+    }
+    
+    public Post getPost(long id) {
+        return postRepository.getOne(id);
     }
     
     public List<PostDTO> getUserFeed(String username) {
@@ -101,7 +106,7 @@ public class PostService {
         Pageable postPageable = PageRequest.of(0, postsPageSize, Sort.by("createdAt").descending());
         Pageable commentPageable = PageRequest.of(0, commentsPerPost, Sort.by("createdAt").descending());
         
-        return postRepository.findFeedPosts(account.getId(), SecurityHelper.requesterId(), postPageable)
+        return postRepository.getFeedPosts(account.getId(),  postPageable)
                 .stream()
                 .map(p -> {
                     PostDTO dto = new PostDTO();

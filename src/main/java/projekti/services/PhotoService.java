@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import projekti.DTO.PhotoDTO;
 import projekti.DTO.PhotoLikeResponseDTO;
 import projekti.exceptions.AccountNotFoundException;
+import projekti.exceptions.AlreadyLikedException;
 import projekti.exceptions.ForbiddenException;
 import projekti.exceptions.PhotoLimitReachedException;
 import projekti.exceptions.PhotoNotFoundException;
@@ -150,7 +151,7 @@ public class PhotoService {
         }
         
         if(likeRepository.isPhotoLikedByUserId(photoId, liker.getId())) {
-            throw new RuntimeException("Photo: " + photoId + " is already liked by " + liker.getUsername());
+            throw new AlreadyLikedException("Photo: " + photoId + " is already liked by " + liker.getUsername());
         }
         
         logger.info(SecurityHelper.requesterUsername() + " likes photo " + photoId);
